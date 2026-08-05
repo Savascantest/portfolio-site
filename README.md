@@ -49,6 +49,6 @@ Exploratory concepts are grouped separately and carry explicit scope limitations
 
 Serve this directory with any static file server and open `index.html`. The homepage and case studies use no build step or package dependencies.
 
-## Publishing boundary
+## Publication status
 
-This folder is ready for review, but it should replace the existing public repository only after the owner confirms the public name spelling, links and final publication scope.
+This redesign is published from the separate `Savascantest/portfolio-site` repository. The earlier `Savascantest/portfolio` repository and its Pages site remain untouched as a backup.
