@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 10: Opportunities (B1+)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .correct-highlight { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; font-weight: 600;}
+        .wrong-highlight { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important;}
+        .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        .input-success { border-color: #22c55e !important; background-color: #f0fdf4 !important; }
+        .answer-badge { display: inline-block; padding: 2px 8px; font-size: 0.8rem; border-radius: 4px; background: #22c55e; color: white; margin-left: 8px; font-weight: 600; animation: fadeIn 0.3s ease-in-out;}
+
+        /* Flashcard Styles - Fixed */
+        .flashcard-container { perspective: 1000px; }
+        .flashcard-inner { transition: transform 0.5s ease-in-out; transform-style: preserve-3d; position: relative; width: 100%; height: 100%; }
+        .flashcard-container.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { backface-visibility: hidden; position: absolute; inset: 0; }
+        .flashcard-back { transform: rotateY(180deg); }
+        
+        /* Word Bank cross-out */
+        .crossed-out { text-decoration: line-through; opacity: 0.4; pointer-events: none; }
+        
+        /* Mobile Bottom Nav Fixes */
+        @media (max-width: 768px) {
+            .nav-text { display: none; }
+            .nav-btn { justify-content: center; padding: 0.75rem !important; }
+            #sidebar { display: none; }
+            #bottom-nav { display: flex; }
+        }
+        @media (min-width: 769px) {
+            #bottom-nav { display: none; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden relative">
+
+    <!-- Sidebar Navigation (Desktop) -->
+    <nav id="sidebar" class="w-64 bg-pink-900 text-white flex-col shadow-xl z-10 flex-shrink-0 hidden md:flex h-full">
+        <div class="p-6 bg-pink-950 text-center border-b border-pink-800">
+            <h1 class="text-2xl font-bold tracking-wider">UNIT 10</h1>
+            <p class="text-pink-300 text-sm mt-1">Opportunities</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li><button onclick="switchTab('dashboard')" id="nav-dashboard-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-house w-6 text-center"></i> <span class="nav-text ml-2">Dashboard</span></button></li>
+                <li><button onclick="switchTab('vocabulary')" id="nav-vocabulary-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-book-open w-6 text-center"></i> <span class="nav-text ml-2">Vocabulary</span></button></li>
+                <li><button onclick="switchTab('reading')" id="nav-reading-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-newspaper w-6 text-center"></i> <span class="nav-text ml-2">Reading</span></button></li>
+                <li><button onclick="switchTab('grammar')" id="nav-grammar-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-pen-ruler w-6 text-center"></i> <span class="nav-text ml-2">Grammar</span></button></li>
+                <li><button onclick="switchTab('writing')" id="nav-writing-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-pen-nib w-6 text-center"></i> <span class="nav-text ml-2">Writing</span></button></li>
+                <li><button onclick="switchTab('speaking')" id="nav-speaking-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-comments w-6 text-center"></i> <span class="nav-text ml-2">Speaking</span></button></li>
+                <li><button onclick="switchTab('flashcards')" id="nav-flashcards-desk" class="w-full text-left px-6 py-3 hover:bg-pink-800 transition border-l-4 border-transparent nav-btn flex items-center"><i class="fa-solid fa-clone w-6 text-center"></i> <span class="nav-text ml-2">Flashcards</span></button></li>
+            </ul>
+        </div>
+        <div class="p-4 bg-pink-950 text-xs text-pink-400 text-center">B1+ / B2 Transition Module</div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto relative bg-slate-50 w-full mb-16 md:mb-0">
+        
+        <!-- Dashboard -->
+        <section id="dashboard" class="tab-content active p-4 sm:p-8 max-w-5xl mx-auto mt-2 sm:mt-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-pink-100 rounded-full -mr-10 -mt-10 sm:-mr-20 sm:-mt-20 opacity-50"></div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-pink-900 mb-4 relative z-10">Welcome to Unit 10</h2>
+                <p class="text-base sm:text-lg text-slate-600 mb-6 max-w-2xl relative z-10">This module focuses on <b>Opportunities, Sports, and Life Choices</b>. You will practice the complex Second and Third Conditionals alongside a curated list of 40 essential words (including expressions with do, make, and take).</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 relative z-10">
+                    </div>
+                </div>
+                
+                <button onclick="switchTab('vocabulary')" class="mt-8 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition relative z-10">Start Vocabulary <i class="fa-solid fa-arrow-right ml-2"></i></button>
+            </div>
+        </section>
+
+        <!-- Vocabulary -->
+        <section id="vocabulary" class="tab-content p-4 sm:p-8 max-w-5xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2 border-slate-200">Vocabulary Master List</h2>
+            
+            <!-- Vocab Dictionary Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8 sm:mb-10">
+                <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <span class="font-bold text-pink-800">Target Words</span>
+                    <span class="bg-pink-100 text-pink-800 text-xs font-bold px-2 py-1 rounded">40 Words</span>
+                </div>
+                <div class="max-h-64 overflow-y-auto w-full overflow-x-auto">
+                    <table class="w-full text-left text-sm min-w-[600px]" id="vocab-dictionary-table">
+                        <thead class="bg-slate-100 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-4 py-3 font-semibold text-slate-700 w-1/6">English Word</th>
+                                <th class="px-4 py-3 font-semibold text-slate-700 w-1/6">Turkish Translation</th>
+                                <th class="px-4 py-3 font-semibold text-slate-700 w-1/3">Example Sentence (EN)</th>
+                                <th class="px-4 py-3 font-semibold text-slate-700 w-1/3">Example Sentence (TR)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="vocab-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Practice Exercises</h2>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-pink-800 mb-4"><i class="fa-solid fa-link mr-2"></i> Part 1: Matching (14 words)</h3>
+                <p class="text-sm text-slate-500 mb-4">Match the English words to their Turkish meanings.</p>
+                <div id="vocab-matching-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"></div>
+                <button onclick="checkVocabMatching()" class="mt-6 w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white py-2 px-6 rounded transition">Check Part 1</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-pink-800 mb-4"><i class="fa-solid fa-list-ul mr-2"></i> Part 2: Multiple Choice (13 words)</h3>
+                <p class="text-sm text-slate-500 mb-4">Select the correct word to complete the sentence.</p>
+                <div id="vocab-mc-container" class="space-y-6"></div>
+                <button onclick="checkVocabMC()" class="mt-6 w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white py-2 px-6 rounded transition">Check Part 2</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-pink-800 mb-4"><i class="fa-solid fa-pen mr-2"></i> Part 3: Fill in the Blanks (13 words)</h3>
+                <p class="text-sm text-slate-500 mb-4">Use the Word Bank to fill in the blanks. Click a word in the bank to cross it out once used.</p>
+                <div id="vocab-fitb-container" class="space-y-4"></div>
+                <button onclick="checkVocabFITB()" class="mt-6 w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white py-2 px-6 rounded transition">Check Part 3</button>
+            </div>
+        </section>
+
+        <!-- Reading -->
+        <section id="reading" class="tab-content p-4 sm:p-8 max-w-5xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2 border-slate-200">Reading Comprehension (B2 Focus)</h2>
+            <p class="text-slate-500 mb-6 text-sm sm:text-base">These texts contain complex grammar (conditionals) and advanced vocabulary. Each text is followed by 10 multiple-choice questions testing inference.</p>
+
+            <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+                <button onclick="switchReading(0)" id="read-tab-0" class="flex-shrink-0 px-4 py-2 bg-pink-600 text-white rounded-md font-medium reading-tab transition">Reading 1</button>
+                <button onclick="switchReading(1)" id="read-tab-1" class="flex-shrink-0 px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-md font-medium reading-tab transition">Reading 2</button>
+                <button onclick="switchReading(2)" id="read-tab-2" class="flex-shrink-0 px-4 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-md font-medium reading-tab transition">Reading 3</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <!-- Text Area -->
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 max-h-[500px] lg:max-h-[800px] overflow-y-auto leading-relaxed">
+                    <h3 id="reading-title" class="text-xl sm:text-2xl font-bold text-pink-900 mb-4">Title</h3>
+                    <div id="reading-text" class="text-slate-700 text-justify space-y-4 text-base sm:text-lg">Text goes here</div>
+                </div>
+                
+                <!-- Questions Area -->
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 max-h-[600px] lg:max-h-[800px] overflow-y-auto">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2"><i class="fa-solid fa-circle-question mr-2 text-pink-600"></i>Questions (10)</h3>
+                    <div id="reading-questions" class="space-y-6">
+                        <!-- Generated by JS -->
+                    </div>
+                    <button onclick="checkReadingAnswers()" class="mt-6 w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded transition shadow">Check Answers</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grammar -->
+        <section id="grammar" class="tab-content p-4 sm:p-8 max-w-4xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2 border-b pb-2 border-slate-200">Grammar Practice</h2>
+            <p class="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">Topic: The Second Conditional (unreal present/future) and Third Conditional (unreal past).</p>
+
+            <div class="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-slate-200 mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-pink-800 mb-6"><i class="fa-solid fa-list-ul mr-2"></i> Multiple Choice (8 Questions)</h3>
+                <div id="grammar-mc-container" class="space-y-6"></div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg sm:text-xl font-semibold text-pink-800 mb-6"><i class="fa-solid fa-keyboard mr-2"></i> Fill in the Blanks (7 Questions)</h3>
+                <div id="grammar-fitb-container" class="space-y-6"></div>
+                
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                    <button onclick="checkGrammarAnswers()" class="w-full sm:w-auto bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded transition shadow-md">Check All Answers</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Writing -->
+        <section id="writing" class="tab-content p-4 sm:p-8 max-w-5xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2 border-slate-200">Writing Exercises</h2>
+            
+            <div class="mb-6">
+                <label for="writing-selector" class="block text-sm font-medium text-slate-700 mb-2">Select a Writing Topic:</label>
+                <select id="writing-selector" onchange="changeWritingPrompt()" class="w-full md:w-1/2 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white shadow-sm text-sm sm:text-base">
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
+
+            <div id="writing-vocab-container" class="mb-6 bg-pink-50 border border-pink-100 rounded-xl overflow-hidden shadow-sm hidden">
+                <div class="bg-pink-100 px-4 py-2 border-b border-pink-200 font-semibold text-pink-800 text-sm">
+                    <i class="fa-solid fa-lightbulb mr-2 text-amber-500"></i> Useful Vocabulary for this prompt
+                </div>
+                <div class="p-4">
+                    <div id="writing-vocab-grid" class="flex flex-wrap gap-2">
+                        <!-- Vocab pills populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-base sm:text-lg font-bold text-pink-800 mb-3"><i class="fa-solid fa-clipboard-list mr-2"></i> Instructions</h3>
+                    <p id="writing-instructions" class="text-slate-600 text-sm mb-4 leading-relaxed"></p>
+                    
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-800 mb-2 mt-6 uppercase tracking-wider">Suggested Structure</h3>
+                    <ul id="writing-structure" class="list-disc pl-4 text-xs sm:text-sm text-slate-600 space-y-2"></ul>
+                </div>
+                
+                <div class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col h-[400px] sm:h-[500px]">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-lg font-bold text-slate-800">Your Text <span class="text-xs text-slate-400 font-normal ml-2">(Target: 150-200 words)</span></label>
+                        <span id="word-count" class="text-sm font-semibold text-pink-600 bg-pink-100 px-3 py-1 rounded-full">0 words</span>
+                    </div>
+                    <textarea id="writing-area" class="w-full flex-1 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 resize-none font-sans text-slate-700 leading-relaxed" placeholder="Start writing here..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Speaking -->
+        <section id="speaking" class="tab-content p-4 sm:p-8 max-w-5xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 border-b pb-2 border-slate-200">Speaking Practice</h2>
+            <p class="text-slate-600 mb-8 text-sm sm:text-lg">Use these prompts to practice speaking. Focus on hypothetical situations using the Second Conditional (If I had...) and regrets using the Third Conditional (If I had known...).</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6" id="speaking-container">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+
+        <!-- Flashcards -->
+        <section id="flashcards" class="tab-content p-4 sm:p-8 max-w-3xl mx-auto flex flex-col items-center">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Vocabulary Flashcards</h2>
+            <p class="text-slate-500 mb-8 text-center text-sm sm:text-base">Unit 10 List (40 words) - Click to reveal translation</p>
+            
+            <div class="w-full max-w-md h-56 sm:h-64 perspective-1000 mb-8 cursor-pointer group" onclick="flipCard()">
+                <div id="flashcard" class="flashcard-container w-full h-full relative">
+                    <div class="flashcard-inner shadow-xl rounded-2xl">
+                        <div class="flashcard-front bg-white border-2 border-pink-200 rounded-2xl flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+                            <span class="text-xs sm:text-sm font-semibold text-pink-500 mb-2 uppercase tracking-widest">English</span>
+                            <h3 id="fc-english" class="text-2xl sm:text-4xl font-bold text-slate-800 break-words w-full px-2">Word</h3>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-4"><i class="fa-solid fa-hand-pointer mr-1"></i> Click to flip</p>
+                        </div>
+                        <div class="flashcard-back bg-pink-600 rounded-2xl flex flex-col items-center justify-center p-4 sm:p-6 text-center text-white">
+                            <span class="text-xs sm:text-sm font-semibold text-pink-200 mb-2 uppercase tracking-widest">Turkish</span>
+                            <h3 id="fc-turkish" class="text-xl sm:text-3xl font-bold break-words w-full px-2">Kelime</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <button onclick="prevCard(); event.stopPropagation();" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white shadow border border-slate-200 hover:bg-slate-50 hover:text-pink-600 transition flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-chevron-left"></i></button>
+                <span id="fc-counter" class="font-bold text-slate-500 tracking-widest">1 / 40</span>
+                <button onclick="nextCard(); event.stopPropagation();" class="w-12 h-12 rounded-full bg-white shadow border border-slate-200 hover:bg-slate-50 hover:text-pink-600 transition flex items-center justify-center text-xl"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            
+            <button onclick="shuffleCards()" class="mt-8 text-sm text-pink-600 hover:text-pink-800 font-semibold"><i class="fa-solid fa-shuffle mr-1"></i> Shuffle Deck</button>
+        </section>
+
+    </main>
+    
+    <!-- Mobile Bottom Navigation -->
+    <nav id="bottom-nav" class="fixed bottom-0 w-full bg-pink-900 text-white flex justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50 md:hidden pb-safe">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard-mob" class="flex flex-col items-center justify-center w-full h-full nav-btn border-b-4 border-transparent text-pink-200 hover:text-white transition">
+            <i class="fa-solid fa-house text-lg mb-1"></i>
+            <span class="text-[0.65rem] uppercase tracking-wide font-medium">Home</span>
+        </button>
+        <button onclick="switchTab('vocabulary')" id="nav-vocabulary-mob" class="flex flex-col items-center justify-center w-full h-full nav-btn border-b-4 border-transparent text-pink-200 hover:text-white transition">
+            <i class="fa-solid fa-book-open text-lg mb-1"></i>
+            <span class="text-[0.65rem] uppercase tracking-wide font-medium">Vocab</span>
+        </button>
+        <button onclick="switchTab('reading')" id="nav-reading-mob" class="flex flex-col items-center justify-center w-full h-full nav-btn border-b-4 border-transparent text-pink-200 hover:text-white transition">
+            <i class="fa-solid fa-newspaper text-lg mb-1"></i>
+            <span class="text-[0.65rem] uppercase tracking-wide font-medium">Read</span>
+        </button>
+        <button onclick="switchTab('grammar')" id="nav-grammar-mob" class="flex flex-col items-center justify-center w-full h-full nav-btn border-b-4 border-transparent text-pink-200 hover:text-white transition">
+            <i class="fa-solid fa-pen-ruler text-lg mb-1"></i>
+            <span class="text-[0.65rem] uppercase tracking-wide font-medium">Grammar</span>
+        </button>
+        <button onclick="switchTab('flashcards')" id="nav-flashcards-mob" class="flex flex-col items-center justify-center w-full h-full nav-btn border-b-4 border-transparent text-pink-200 hover:text-white transition">
+            <i class="fa-solid fa-clone text-lg mb-1"></i>
+            <span class="text-[0.65rem] uppercase tracking-wide font-medium">Cards</span>
+        </button>
+        <!-- Writing and speaking grouped or just skip less used tabs on bottom nav for space, let's keep flashcards and 3 main. 
+             If we need all, we can add a 'More' menu, but 5 icons max is best for mobile bottom navs. 
+             I replaced writing/speaking with flashcards since it's highly interactive for mobile. -->
+    </nav>
+
+    <script>
+        // --- STREAMING_CHUNK:Defining Data Arrays (Vocab, Readings, Grammar)... ---
+        // --- DATA ---
+        // Unit 10: Opportunities (40 curated words)
+        const allVocab = [
+            { en: "extreme sport", tr: "ekstrem spor", sentence: "Snowboarding is considered an ________ that requires a lot of courage.", ex_en: "Snowboarding is considered an extreme sport that requires a lot of courage.", ex_tr: "Snowboard, büyük cesaret gerektiren bir ekstrem spor olarak kabul edilir." },
+            { en: "workout", tr: "antrenman / egzersiz", sentence: "I do a thirty-minute ________ at the gym every morning.", ex_en: "I do a thirty-minute workout at the gym every morning.", ex_tr: "Her sabah spor salonunda otuz dakikalık bir antrenman yaparım." },
+            { en: "essential for", tr: "için hayati / gerekli", sentence: "Drinking plenty of water is ________ your physical health.", ex_en: "Drinking plenty of water is essential for your physical health.", ex_tr: "Bol su içmek fiziksel sağlığınız için hayati önem taşır." },
+            { en: "interested in", tr: "-e ilgili", sentence: "She is highly ________ learning about ancient history.", ex_en: "She is highly interested in learning about ancient history.", ex_tr: "Antik tarih hakkında bir şeyler öğrenmeye son derece ilgilidir." },
+            { en: "popular with", tr: "arasında popüler", sentence: "This video game is incredibly ________ teenagers.", ex_en: "This video game is incredibly popular with teenagers.", ex_tr: "Bu video oyunu gençler arasında inanılmaz derecede popülerdir." },
+            { en: "proud of", tr: "-den gururlu", sentence: "His parents were very ________ him when he finally graduated from university.", ex_en: "His parents were very proud of him when he finally graduated from university.", ex_tr: "Nihayet üniversiteden mezun olduğunda ailesi onunla çok gurur duydu." },
+            { en: "similar to", tr: "-e benzer", sentence: "Your new jacket is very ________ the one I bought last year.", ex_en: "Your new jacket is very similar to the one I bought last year.", ex_tr: "Yeni ceketiniz geçen yıl aldığım cekete çok benzer." },
+            { en: "tired of", tr: "-den bıkmış / yorgun", sentence: "I am completely ________ eating the same sandwich every day.", ex_en: "I am completely tired of eating the same sandwich every day.", ex_tr: "Her gün aynı sandviçi yemekten tamamen bıktım." },
+            { en: "worried about", tr: "hakkında endişeli", sentence: "She is constantly ________ failing her final mathematics exam.", ex_en: "She is constantly worried about failing her final mathematics exam.", ex_tr: "Sürekli olarak son matematik sınavında başarısız olmaktan endişe ediyor." },
+            { en: "do research", tr: "araştırma yapmak", sentence: "You need to ________ before you write your university essay.", ex_en: "You need to do research before you write your university essay.", ex_tr: "Üniversite makalenizi yazmadan önce araştırma yapmanız gerekir." },
+            { en: "make the most of", tr: "-den en iyi şekilde yararlanmak", sentence: "We only have two days in Paris, so let's ________ our time.", ex_en: "We only have two days in Paris, so let's make the most of our time.", ex_tr: "Paris'te sadece iki günümüz var, o yüzden zamanımızdan en iyi şekilde yararlanalım." },
+            { en: "take a risk", tr: "risk almak", sentence: "Sometimes you have to ________ if you want to achieve great things in life.", ex_en: "Sometimes you have to take a risk if you want to achieve great things in life.", ex_tr: "Hayatta harika şeyler başarmak istiyorsanız bazen risk almanız gerekir." },
+            { en: "take advantage of", tr: "-den faydalanmak / fırsata çevirmek", sentence: "You should ________ the free English classes offered at the library.", ex_en: "You should take advantage of the free English classes offered at the library.", ex_tr: "Kütüphanede sunulan ücretsiz İngilizce derslerinden faydalanmalısınız." },
+            { en: "compete", tr: "rekabet etmek / yarışmak", sentence: "Several international teams will ________ for the championship trophy this year.", ex_en: "Several international teams will compete for the championship trophy this year.", ex_tr: "Bu yıl birkaç uluslararası takım şampiyonluk kupası için yarışacak." },
+            { en: "competitive", tr: "rekabetçi", sentence: "The technology market is a highly ________ industry.", ex_en: "The technology market is a highly competitive industry.", ex_tr: "Teknoloji pazarı son derece rekabetçi bir endüstridir." },
+            { en: "competitor", tr: "yarışmacı / rakip", sentence: "He is a fierce ________ who never gives up during a match.", ex_en: "He is a fierce competitor who never gives up during a match.", ex_tr: "O, maç sırasında asla pes etmeyen şiddetli bir rakiptir." },
+            { en: "equipment", tr: "ekipman / donanım", sentence: "Scuba diving requires highly specialized and expensive ________.", ex_en: "Scuba diving requires highly specialized and expensive equipment.", ex_tr: "Tüplü dalış son derece uzmanlaşmış ve pahalı ekipman gerektirir." },
+            { en: "individual sport", tr: "bireysel spor", sentence: "Tennis is an ________ that relies heavily on personal stamina.", ex_en: "Tennis is an individual sport that relies heavily on personal stamina.", ex_tr: "Tenis, büyük ölçüde kişisel dayanıklılığa dayanan bireysel bir spordur." },
+            { en: "referee", tr: "hakem", sentence: "The angry players argued with the ________ after he blew his whistle.", ex_en: "The angry players argued with the referee after he blew his whistle.", ex_tr: "Kızgın oyuncular, düdüğünü çaldıktan sonra hakemle tartıştılar." },
+            { en: "team sport", tr: "takım sporu", sentence: "Basketball is a fast-paced ________ that requires excellent communication.", ex_en: "Basketball is a fast-paced team sport that requires excellent communication.", ex_tr: "Basketbol, mükemmel iletişim gerektiren hızlı tempolu bir takım sporudur." },
+            { en: "do badly", tr: "kötü yapmak / gitmek", sentence: "If you don't study, you will definitely ________ in the test.", ex_en: "If you don't study, you will definitely do badly in the test.", ex_tr: "Eğer çalışmazsan, testte kesinlikle kötü yaparsın." },
+            { en: "do well", tr: "iyi yapmak / gitmek", sentence: "I am confident that my sister will ________ in her new job.", ex_en: "I am confident that my sister will do well in her new job.", ex_tr: "Kız kardeşimin yeni işinde iyi yapacağından eminim." },
+            { en: "do your best", tr: "elinden gelenin en iyisini yapmak", sentence: "It doesn't matter if you lose the game, as long as you ________.", ex_en: "It doesn't matter if you lose the game, as long as you do your best.", ex_tr: "Elinden gelenin en iyisini yaptığın sürece oyunu kaybetmen önemli değil." },
+            { en: "do your homework", tr: "ödevini yapmak / ön hazırlık yapmak", sentence: "You must ________ before investing money in the stock market.", ex_en: "You must do your homework before investing money in the stock market.", ex_tr: "Borsaya para yatırmadan önce ön hazırlığınızı yapmalısınız." },
+            { en: "make a difference", tr: "fark yaratmak", sentence: "Volunteering at the shelter can really ________ in your community.", ex_en: "Volunteering at the shelter can really make a difference in your community.", ex_tr: "Barınakta gönüllü olmak toplumunuzda gerçekten bir fark yaratabilir." },
+            { en: "make a decision", tr: "karar vermek", sentence: "You need to ________ about which university you want to attend.", ex_en: "You need to make a decision about which university you want to attend.", ex_tr: "Hangi üniversiteye gitmek istediğinize karar vermeniz gerekiyor." },
+            { en: "make a mistake", tr: "hata yapmak", sentence: "Don't be afraid to ________; it is the only way to learn.", ex_en: "Don't be afraid to make a mistake; it is the only way to learn.", ex_tr: "Hata yapmaktan korkmayın; öğrenmenin tek yolu budur." },
+            { en: "make friends", tr: "arkadaş edinmek", sentence: "It is sometimes difficult to ________ when you move to a new city.", ex_en: "It is sometimes difficult to make friends when you move to a new city.", ex_tr: "Yeni bir şehre taşındığınızda arkadaş edinmek bazen zor olabilir." },
+            { en: "make progress", tr: "ilerleme kaydetmek", sentence: "If you practice playing the guitar every day, you will quickly ________.", ex_en: "If you practice playing the guitar every day, you will quickly make progress.", ex_tr: "Her gün gitar çalma pratiği yaparsanız hızla ilerleme kaydedersiniz." },
+            { en: "make sense", tr: "mantıklı gelmek", sentence: "His complicated explanation didn't ________ to anyone in the room.", ex_en: "His complicated explanation didn't make sense to anyone in the room.", ex_tr: "Onun karmaşık açıklaması odadaki hiç kimseye mantıklı gelmedi." },
+            { en: "take a break", tr: "mola vermek", sentence: "We have been studying for hours; let's ________ and get some coffee.", ex_en: "We have been studying for hours; let's take a break and get some coffee.", ex_tr: "Saatlerdir ders çalışıyoruz; hadi bir mola verelim ve biraz kahve alalım." },
+            { en: "take a chance", tr: "şansını denemek / riske girmek", sentence: "He decided to ________ and start his own business despite the economy.", ex_en: "He decided to take a chance and start his own business despite the economy.", ex_tr: "Ekonomiye rağmen şansını deneyip kendi işini kurmaya karar verdi." },
+            { en: "take care of", tr: "ilgilenmek / göz kulak olmak", sentence: "Could you please ________ my cat while I am on vacation?", ex_en: "Could you please take care of my cat while I am on vacation?", ex_tr: "Tatilden dönene kadar kedime göz kulak olabilir misin?" },
+            { en: "take it easy", tr: "ağırdan almak / sakin olmak", sentence: "You have been working too hard lately; you need to ________ this weekend.", ex_en: "You have been working too hard lately; you need to take it easy this weekend.", ex_tr: "Son zamanlarda çok fazla çalışıyorsun; bu hafta sonu ağırdan almalısın." },
+            { en: "take part in", tr: "katılmak / yer almak", sentence: "Over five hundred athletes will ________ the marathon next Sunday.", ex_en: "Over five hundred athletes will take part in the marathon next Sunday.", ex_tr: "Gelecek pazar maratonuna beş yüzden fazla sporcu katılacak." },
+            { en: "opponent", tr: "rakip", sentence: "The boxer shook hands with his ________ before the match started.", ex_en: "The boxer shook hands with his opponent before the match started.", ex_tr: "Boksör, maç başlamadan önce rakibiyle tokalaştı." },
+            { en: "score", tr: "skor / sayı yapmak", sentence: "The final ________ of the game was three to one.", ex_en: "The final score of the game was three to one.", ex_tr: "Maçın son skoru üçe birdi." },
+            { en: "beat", tr: "yenmek", sentence: "Our team managed to ________ the reigning champions in the final round.", ex_en: "Our team managed to beat the reigning champions in the final round.", ex_tr: "Takımımız final turunda son şampiyonları yenmeyi başardı." },
+            { en: "match", tr: "maç / karşılaşma", sentence: "We bought tickets to watch the live football ________ at the stadium.", ex_en: "We bought tickets to watch the live football match at the stadium.", ex_tr: "Stadyumda canlı futbol maçını izlemek için bilet aldık." },
+            { en: "court", tr: "kort / saha", sentence: "The players walked onto the tennis ________ and waved to the crowd.", ex_en: "The players walked onto the tennis court and waved to the crowd.", ex_tr: "Oyuncular tenis kortuna yürüdü ve kalabalığa el salladı." }
+        ];
+
+        const readings = [
+            {
+                title: "Chasing the Adrenaline",
+                text: "Many people prefer a quiet life, choosing activities that are perfectly safe and predictable. However, a growing subculture is completely <strong>tired of</strong> the mundane routine. These thrill-seekers are incredibly <strong>interested in</strong> pushing their physical and mental limits. For them, participating in an <strong>extreme sport</strong> is not just a hobby; it is a lifestyle. Whether they are jumping out of aeroplanes or climbing sheer rock faces, they are constantly looking to <strong>take a risk</strong>. <br><br>Of course, this lifestyle requires serious preparation. Proper <strong>training</strong> is absolutely <strong>essential for</strong> survival. You cannot simply walk up to a snowy mountain without the correct <strong>equipment</strong> and expect to survive. If you are <strong>afraid of</strong> heights, skydiving is definitely not <strong>right for</strong> you. An experienced skydiver, Mark, notes, \"People think we are crazy, but we <strong>do our homework</strong>. We meticulously check our parachutes. If I hadn't checked my gear on my first jump, I would have made a fatal mistake.\" It is true that accidents happen. Sometimes, athletes push themselves too far. If a climber loses their grip or makes a bad <strong>decision</strong>, they could be in grave danger. However, they are not <strong>scared of</strong> the consequences. <br><br>Instead, they focus on how to <strong>make the most of</strong> the experience. The rush of adrenaline when they reach the peak of a mountain or land safely on the <strong>track</strong> makes them incredibly <strong>proud of</strong> their achievements. They don't <strong>compete</strong> against an <strong>opponent</strong> in a traditional <strong>game</strong>; it is an <strong>individual sport</strong> where the only <strong>competitor</strong> is their own mind. If they didn't <strong>take a chance</strong>, they wouldn't experience the ultimate freedom that comes from conquering their deepest fears.",
+                questions: [
+                    { type: 'mc', question: "What is the primary motivation for people participating in extreme sports, according to the text?", options: ["They are tired of the mundane routine and want to push their limits.", "They want to make money quickly.", "They are afraid of traditional team sports.", "They enjoy buying expensive equipment.", "They want to impress the referee."], answer: "They are tired of the mundane routine and want to push their limits." },
+                    { type: 'mc', question: "Why does Mark say they are not crazy?", options: ["Because they do their homework and meticulously check their gear.", "Because they only jump out of aeroplanes in the summer.", "Because they have never made a mistake.", "Because extreme sports are perfectly safe.", "Because they always compete in a team."], answer: "Because they do their homework and meticulously check their gear." },
+                    { type: 'mc', question: "What grammatical structure is used in 'If I hadn't checked my gear, I would have made a fatal mistake'?", options: ["The Third Conditional (unreal past).", "The Second Conditional (unreal present).", "The First Conditional (real future).", "The Passive Voice.", "Reported Speech."], answer: "The Third Conditional (unreal past)." },
+                    { type: 'mc', question: "Who is the primary competitor in an extreme sport, according to the final paragraph?", options: ["The athlete's own mind.", "The reigning champion.", "The mountain or the track.", "The referee.", "Other extreme sports enthusiasts."], answer: "The athlete's own mind." },
+                    { type: 'mc', question: "What would happen if an athlete didn't take a chance, based on the text?", options: ["They wouldn't experience the ultimate freedom of conquering their fears.", "They would automatically win the game.", "They would become extremely tired of the track.", "They would lose their equipment.", "They would be forced to play a team sport."], answer: "They wouldn't experience the ultimate freedom of conquering their fears." },
+                    { type: 'mc', question: "Which phrase best replaces 'do our homework' in the context of the second paragraph?", options: ["Make thorough preparations and research.", "Complete school assignments.", "Clean our houses.", "Take it easy.", "Do badly."], answer: "Make thorough preparations and research." },
+                    { type: 'mc', question: "What does the word 'gear' in the second paragraph refer to?", options: ["The specialized equipment used for the sport.", "The wheels of a car.", "The physical track.", "The opponent.", "The referee's whistle."], answer: "The specialized equipment used for the sport." },
+                    { type: 'mc', question: "What makes extreme athletes proud of their achievements?", options: ["The rush of adrenaline when they reach their goal.", "Beating a specific opponent on the court.", "Winning a lot of money.", "Making a phone call from the top of the mountain.", "Doing badly in a competitive match."], answer: "The rush of adrenaline when they reach their goal." },
+                    { type: 'mc', question: "What is deemed 'essential for' survival in extreme sports?", options: ["Proper training.", "Being afraid of heights.", "Taking a break.", "Playing a team sport.", "Missing a shot."], answer: "Proper training." },
+                    { type: 'mc', question: "Which adjective correctly completes this sentence based on the text's grammar rules? 'If I were ________ heights, I wouldn't go skydiving.'", options: ["afraid of", "popular with", "similar to", "tired of", "essential for"], answer: "afraid of" }
+                ]
+            },
+            {
+                title: "The Psychology of Competition",
+                text: "Professional athletes live in a world that is intensely <strong>competitive</strong>. Whether they are playing a <strong>team sport</strong> like football or an <strong>individual sport</strong> like tennis, the pressure to <strong>do well</strong> is immense. When a player steps onto the <strong>court</strong>, they are not just fighting the physical exhaustion of a tough <strong>workout</strong>; they are battling their own psychological barriers. <br><br>Let's consider a high-stakes tennis <strong>match</strong>. If a player misses an easy <strong>shot</strong> into the <strong>net</strong> early in the game, it can easily destroy their confidence. If they didn't have strong mental resilience, they would quickly <strong>lose</strong> the match. A famous tennis coach once said, \"If my players focused on every single <strong>point</strong> they lost, they would never <strong>win</strong>. You have to <strong>take it easy</strong> in your mind while pushing your body to the limit.\" It is crucial to <strong>take care of</strong> your mental health. If an athlete <strong>does badly</strong> in a tournament, they might feel completely overwhelmed and <strong>worried about</strong> their future career. <br><br>However, true champions know how to <strong>take advantage of</strong> their failures. When they are <strong>beaten</strong> by a superior <strong>opponent</strong>, they don't just sit and complain about the <strong>referee</strong>. Instead, they <strong>do research</strong>. They watch video replays of the game to see exactly where they made a <strong>mistake</strong>. If they hadn't lost that specific match, they wouldn't have learned what they needed to improve. They use the failure to <strong>make progress</strong>. Ultimately, sports are a metaphor for life. If you always played against people who were worse than you, your <strong>score</strong> might be high, but you would never truly improve. To become the best, you must embrace the struggle.",
+                questions: [
+                    { type: 'mc', question: "What is described as the immense pressure professional athletes face?", options: ["The pressure to do well in a highly competitive world.", "The pressure to become a referee.", "The pressure to play an individual sport.", "The pressure to take a break during a match.", "The pressure to lose the game intentionally."], answer: "The pressure to do well in a highly competitive world." },
+                    { type: 'mc', question: "What does a player battle when stepping onto the court, besides physical exhaustion?", options: ["Their own psychological barriers.", "The referee's bad decisions.", "The heavy equipment.", "The lack of training.", "The weather conditions."], answer: "Their own psychological barriers." },
+                    { type: 'mc', question: "According to the famous tennis coach, what would happen if players focused on every point they lost?", options: ["They would never win.", "They would easily beat the opponent.", "They would take a break.", "They would complain to the referee.", "They would make a phone call."], answer: "They would never win." },
+                    { type: 'mc', question: "What grammatical structure is used in 'If they didn't have strong mental resilience, they would quickly lose'?", options: ["The Second Conditional (unreal present).", "The Third Conditional (unreal past).", "The First Conditional (real future).", "The Passive Voice.", "Reported Speech."], answer: "The Second Conditional (unreal present)." },
+                    { type: 'mc', question: "How do true champions react when they are beaten by a superior opponent?", options: ["They do research and watch video replays to learn from their mistakes.", "They complain about the referee.", "They quit the sport immediately.", "They attack their opponent.", "They refuse to practice anymore."], answer: "They do research and watch video replays to learn from their mistakes." },
+                    { type: 'mc', question: "What is the logical meaning of 'If they hadn't lost that specific match, they wouldn't have learned...'?", options: ["Losing the match caused them to learn a valuable lesson in the past.", "They didn't lose the match, so they learned nothing.", "If they lose in the future, they will learn.", "They will never lose a match.", "They should intentionally lose all matches."], answer: "Losing the match caused them to learn a valuable lesson in the past." },
+                    { type: 'mc', question: "What would happen if you always played against people who were worse than you?", options: ["Your score might be high, but you would never truly improve.", "You would make a lot of progress.", "You would learn from your mistakes.", "You would become a fierce competitor.", "You would take a massive risk."], answer: "Your score might be high, but you would never truly improve." },
+                    { type: 'mc', question: "What does the text suggest sports are a metaphor for?", options: ["Life and the necessity of embracing struggle to improve.", "Earning money quickly.", "Making phone calls.", "Taking a break.", "Avoiding all risks."], answer: "Life and the necessity of embracing struggle to improve." },
+                    { type: 'mc', question: "What does the word 'overwhelmed' in the second paragraph imply?", options: ["Feeling completely defeated and stressed by the situation.", "Feeling very proud of an achievement.", "Feeling completely relaxed.", "Feeling interested in the opponent.", "Feeling perfect for the sport."], answer: "Feeling completely defeated and stressed by the situation." },
+                    { type: 'mc', question: "Which expression correctly matches the action of learning from failure in the text?", options: ["To make progress.", "To take it easy.", "To make a mistake.", "To miss a shot.", "To do badly."], answer: "To make progress." }
+                ]
+            },
+            {
+                title: "Making Your Own Luck",
+                text: "People often believe that success is entirely based on fortune. They see a wealthy CEO or a famous actor and assume that those individuals were just in the right place at the right time. However, successful people know that you have to <strong>make your own luck</strong>. If you just sit at home waiting for an opportunity, your life will never change. You have to <strong>take action</strong>. It is absolutely <strong>essential for</strong> young professionals to <strong>make a decision</strong> about their future and aggressively pursue it.<br><br>Consider a young entrepreneur named Sarah. She was <strong>tired of</strong> working a boring office job. She was heavily <strong>interested in</strong> sustainable fashion, so she decided to <strong>take a risk</strong>. She quit her job and started her own company. If she hadn't quit her secure job, she would never have started her successful business. Initially, her business <strong>did badly</strong>. She struggled to <strong>make money</strong>, and she almost gave up. But she used her network to <strong>make friends</strong> with other designers. She decided to <strong>make a phone call</strong> to a major investor. If she were too <strong>afraid of</strong> rejection, she wouldn't be the CEO of a multi-million-dollar brand today. <br><br>Opportunities are rarely obvious. Sometimes, you must <strong>take a chance</strong> on something that doesn't immediately <strong>make sense</strong>. If an unusual project comes your way, you should <strong>take part in</strong> it to see where it leads. The people who <strong>make a difference</strong> in the world are the ones who are willing to step out of their comfort zones. They don't wait for the perfect moment; they create it. If we all lived completely safe lives without taking risks, the world wouldn't see any major innovation. Ultimately, you must be bold enough to grab the opportunities that pass you by.",
+                questions: [
+                    { type: 'mc', question: "What do people often incorrectly assume about successful individuals?", options: ["That their success is entirely based on fortune and being in the right place.", "That they worked harder than anyone else.", "That they took massive risks to get there.", "That they made their own luck.", "That they are tired of working."], answer: "That their success is entirely based on fortune and being in the right place." },
+                    { type: 'mc', question: "What does the text suggest you must do instead of waiting for an opportunity?", options: ["Take action and make a decision about your future.", "Take a break and rest.", "Complain about your boring office job.", "Make a mistake intentionally.", "Wait for someone to make a phone call to you."], answer: "Take action and make a decision about your future." },
+                    { type: 'mc', question: "Why did Sarah decide to quit her boring office job?", options: ["She was interested in sustainable fashion and wanted to take a risk.", "She was making too much money.", "She wanted to play a team sport.", "She was afraid of her boss.", "She wanted to do badly in her career."], answer: "She was interested in sustainable fashion and wanted to take a risk." },
+                    { type: 'mc', question: "What grammatical structure is 'If she hadn't quit her secure job, she would never have started her business'?", options: ["The Third Conditional (unreal past).", "The Second Conditional (unreal present).", "The First Conditional (real future).", "The Passive Voice.", "Reported Speech."], answer: "The Third Conditional (unreal past)." },
+                    { type: 'mc', question: "What would be true today if Sarah were too afraid of rejection?", options: ["She wouldn't be the CEO of a multi-million-dollar brand.", "She would be making a lot of progress.", "She would take advantage of the investor.", "She would make a huge difference.", "She would be a famous athlete."], answer: "She wouldn't be the CEO of a multi-million-dollar brand." },
+                    { type: 'mc', question: "What does the author suggest doing when an unusual project comes your way?", options: ["Take part in it to see where it leads, even if it doesn't immediately make sense.", "Take a break and ignore it.", "Make a phone call to reject it.", "Wait for a perfect moment.", "Do badly on purpose."], answer: "Take part in it to see where it leads, even if it doesn't immediately make sense." },
+                    { type: 'mc', question: "Who are the people that make a difference in the world, according to the text?", options: ["The ones who are willing to step out of their comfort zones.", "The ones who wait for the perfect moment.", "The ones who live completely safe lives.", "The ones who never make mistakes.", "The ones who play individual sports."], answer: "The ones who are willing to step out of their comfort zones." },
+                    { type: 'mc', question: "What is the consequence of everyone living completely safe lives without taking risks?", options: ["The world wouldn't see any major innovation.", "Everyone would make a lot of money.", "The world would be perfectly happy.", "There would be no opponents.", "Everyone would make their own luck."], answer: "The world wouldn't see any major innovation." },
+                    { type: 'mc', question: "The word 'aggressively' in the first paragraph is closest in meaning to:", options: ["With forceful determination and energy.", "Violently and angrily attacking someone.", "Slowly and carefully.", "Quietly and secretly.", "Without making any decisions."], answer: "With forceful determination and energy." },
+                    { type: 'mc', question: "Which phrase best describes the overall theme of the reading?", options: ["Proactive risk-taking leads to success.", "Safety is the most important part of business.", "You should never make a phone call to strangers.", "Fashion is the only way to make a difference.", "If you do badly, you should immediately give up."], answer: "Proactive risk-taking leads to success." }
+                ]
+            }
+        ];
+
+        const grammarQuestions = [
+            // B2 Level Grammar: Second and Third Conditionals
+            { type: 'mc', q: "If I _____ more money, I would travel around the world. (But I don't have money now)", options: ["had", "have", "had had", "would have", "am having"], a: "had" },
+            { type: 'mc', q: "If she _____ the train, she would have arrived on time. (But she missed it yesterday)", options: ["had caught", "caught", "catches", "would catch", "has caught"], a: "had caught" },
+            { type: 'mc', q: "What _____ if you found a million dollars in the street?", options: ["would you do", "will you do", "did you do", "would you have done", "do you do"], a: "would you do" },
+            { type: 'mc', q: "If they hadn't taken that risk, they _____ such a successful company today.", options: ["wouldn't have", "don't have", "won't have", "hadn't had", "wouldn't had"], a: "wouldn't have" }, // Mixed conditional conceptually, but standard 3rd structure is tested.
+            { type: 'mc', q: "I wouldn't buy that expensive equipment if I _____ you.", options: ["were", "am", "had been", "would be", "was being"], a: "were" },
+            { type: 'mc', q: "If he had done his homework, he _____ so badly in the exam last week.", options: ["wouldn't have done", "didn't do", "wouldn't do", "hasn't done", "won't do"], a: "wouldn't have done" },
+            { type: 'mc', q: "If humans _____ wings, we wouldn't need aeroplanes.", options: ["had", "have", "had had", "would have", "having"], a: "had" },
+            { type: 'mc', q: "We _____ the match if our best player hadn't been injured.", options: ["would have won", "would win", "will win", "won", "had won"], a: "would have won" },
+            
+            { type: 'fitb', q: "If I [knew] his phone number, I would call him right now. (know)", a: "knew" },
+            { type: 'fitb', q: "If she [had studied] harder, she would have passed the final exam. (study)", a: "had studied" },
+            { type: 'fitb', q: "I [would travel] to Japan if I could speak Japanese. (travel)", a: "would travel" },
+            { type: 'fitb', q: "If they [had taken] advantage of the opportunity, they would have made a lot of money. (take)", a: "had taken" },
+            { type: 'fitb', q: "If I were the referee, I [would give] him a red card. (give)", a: "would give" },
+            { type: 'fitb', q: "He wouldn't have made a mistake if he [had listened] to the instructions. (listen)", a: "had listened" },
+            { type: 'fitb', q: "What would you do if you [won] the lottery? (win)", a: "won" }
+        ];
+
+        const writingPrompts = [
+            {
+                title: "An Email of Advice",
+                instructions: "A friend is afraid of taking a risk on a new business opportunity. Write an email giving them advice. Use the <b>Second Conditional</b> (If I were you, I would...) to tell them what you would do in their situation.",
+                structure: [
+                    "Greeting: Acknowledge their situation and that they are worried.",
+                    "The Advice: Use the Second Conditional to tell them what you would do if you were them.",
+                    "The Reasoning: Use target vocabulary to explain the benefits of taking a chance.",
+                    "Sign-off: Encourage them to make a decision."
+                ],
+                vocab: ["worried about", "take a risk", "make a decision", "take a chance", "make the most of", "do research", "take advantage of"]
+            },
+            {
+                title: "A Sports Match Review",
+                instructions: "Write a short blog post or article about a famous sports match (real or imaginary) that your team lost. Use the <b>Third Conditional</b> to describe what could have changed the outcome (e.g., If the referee hadn't made a mistake, we would have won).",
+                structure: [
+                    "Introduction: Set the scene for the match and the competitors.",
+                    "The Turning Point: Describe the crucial moment where things went wrong.",
+                    "The Hypothesis: Use the Third Conditional to explain what would have happened if things went differently.",
+                    "Conclusion: Summarize the final score and the lesson learned."
+                ],
+                vocab: ["match", "opponent", "referee", "make a mistake", "score", "beat", "do badly"]
+            },
+            {
+                title: "A Discussion Essay",
+                instructions: "Write a short essay discussing whether playing an individual sport is better than playing a team sport for personal development. Use conditional sentences to support your arguments.",
+                structure: [
+                    "Introduction: Introduce the debate between individual and team sports.",
+                    "Paragraph 1 (Team Sports): Discuss the benefits (e.g., making friends, communication).",
+                    "Paragraph 2 (Individual Sports): Discuss the benefits (e.g., individual competition, taking responsibility).",
+                    "Conclusion: State your personal opinion and summarize your main points."
+                ],
+                vocab: ["team sport", "individual sport", "competitive", "make friends", "make progress", "do your best", "make a difference"]
+            }
+        ];
+
+        const speakingTopics = [
+            {
+                title: "Sports and Competition",
+                icon: "fa-trophy",
+                questions: [
+                    "Do you prefer watching a team sport or an individual sport? Why?",
+                    "Have you ever participated in a highly competitive match?",
+                    "What would you do if you strongly disagreed with a referee's decision?",
+                    "Do you think participating in an extreme sport is a good way to build character?",
+                    "If you had trained harder as a child, would you have become a professional athlete?"
+                ]
+            },
+            {
+                title: "Taking Risks and Opportunities",
+                icon: "fa-dice",
+                questions: [
+                    "What is the biggest risk you have ever taken in your life?",
+                    "If you had a chance to start your own business tomorrow, what would it be?",
+                    "Do you believe that people make their own luck, or is it just fate?",
+                    "What would you do if you were offered an amazing job in another country?",
+                    "Have you ever missed a great opportunity because you were too scared to take a chance?"
+                ]
+            },
+            {
+                title: "Decisions and Regrets",
+                icon: "fa-code-branch",
+                questions: [
+                    "Tell me about a time you made a big mistake. What did you learn from it?",
+                    "If you hadn't chosen your current path of study/career, what would you have done?",
+                    "How do you usually make a decision when faced with a difficult choice?",
+                    "If you could go back in time and change one decision, what would it be?",
+                    "Do you think it is more important to take it easy or to always push for progress?"
+                ]
+            }
+        ];
+
+        // --- UTILS ---
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // --- INIT & NAVIGATION ---
+        function init() {
+            populateDictionary();
+            renderVocabulary();
+            switchReading(0);
+            renderGrammar();
+            renderWritingOptions();
+            renderSpeaking();
+            updateFlashcardText();
+
+            document.getElementById('writing-area').addEventListener('input', function() {
+                const text = this.value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                document.getElementById('word-count').innerText = `${words} words`;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                // Reset desktop nav
+                if(el.id && el.id.endsWith('-desk')) {
+                    el.classList.remove('bg-pink-800', 'border-pink-400');
+                    el.classList.add('border-transparent');
+                }
+                // Reset mobile nav
+                if(el.id && el.id.endsWith('-mob')) {
+                    el.classList.remove('text-white', 'border-pink-400', 'bg-pink-800');
+                    el.classList.add('text-pink-200', 'border-transparent');
+                }
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activate desktop nav btn
+            const activeDeskBtn = document.getElementById(`nav-${tabId}-desk`);
+            if(activeDeskBtn) {
+                activeDeskBtn.classList.remove('border-transparent');
+                activeDeskBtn.classList.add('bg-pink-800', 'border-pink-400');
+            }
+            
+            // Activate mobile nav btn (if exists)
+            const activeMobBtn = document.getElementById(`nav-${tabId}-mob`);
+            if(activeMobBtn) {
+                activeMobBtn.classList.remove('text-pink-200', 'border-transparent');
+                activeMobBtn.classList.add('text-white', 'border-pink-400', 'bg-pink-800');
+            }
+            
+            window.scrollTo(0,0);
+        }
+
+        // --- VOCABULARY GENERATION ---
+        function populateDictionary() {
+            const tbody = document.getElementById('vocab-table-body');
+            tbody.innerHTML = '';
+            const sortedVocab = [...allVocab].sort((a, b) => a.en.localeCompare(b.en));
+            sortedVocab.forEach(v => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-pink-50 transition border-b border-slate-100 last:border-0">
+                        <td class="px-4 py-3 font-medium text-pink-700 align-top">${v.en}</td>
+                        <td class="px-4 py-3 text-slate-600 align-top">${v.tr}</td>
+                        <td class="px-4 py-3 text-slate-600 italic align-top">"${v.ex_en}"</td>
+                        <td class="px-4 py-3 text-slate-500 text-sm align-top">"${v.ex_tr}"</td>
+                    </tr>
+                `;
+            });
+        }
+
+        let vocabMatchingAnswers = {};
+        let vocabMCAnswers = {};
+        let vocabFITBAnswers = {};
+
+        window.toggleWordBank = function(el) {
+            el.classList.toggle('crossed-out');
+        }
+
+        function renderVocabulary() {
+            // Unit 10 has 40 words. Split: 14 Match, 13 MC, 13 FITB
+            let workingVocab = shuffleArray([...allVocab]);
+            let matchingVocab = workingVocab.slice(0, 14);
+            let mcVocab = workingVocab.slice(14, 27);
+            let fitbVocab = workingVocab.slice(27, 40);
+
+            // 1. Render Matching
+            const matchContainer = document.getElementById('vocab-matching-container');
+            let matchEn = [...matchingVocab];
+            let matchTr = shuffleArray([...matchingVocab]);
+            vocabMatchingAnswers = {};
+            
+            let matchHtml = `<div class="space-y-3">`;
+            matchEn.forEach((v, i) => {
+                vocabMatchingAnswers[`match-sel-${i}`] = v.tr;
+                matchHtml += `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-50 p-3 rounded border border-slate-200 gap-2">
+                        <span class="font-medium text-slate-700 w-full sm:w-1/2">${v.en}</span>
+                        <select id="match-sel-${i}" class="w-full sm:w-1/2 p-2 border border-slate-300 rounded focus:ring-pink-500 focus:border-pink-500 text-sm">
+                            <option value="">Select meaning...</option>
+                            ${matchTr.map(t => `<option value="${t.tr}">${t.tr}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            });
+            matchHtml += `</div>`;
+            matchContainer.innerHTML = matchHtml;
+
+            // 2. Render MC
+            const mcContainer = document.getElementById('vocab-mc-container');
+            vocabMCAnswers = {};
+            let mcHtml = '';
+            mcVocab.forEach((v, i) => {
+                vocabMCAnswers[`vmc-${i}`] = v.en;
+                let options = [v.en];
+                let distractors = shuffleArray([...allVocab].filter(item => item.en !== v.en)).slice(0, 4);
+                distractors.forEach(d => options.push(d.en));
+                options = shuffleArray(options);
+
+                mcHtml += `
+                    <div class="border-b border-slate-100 pb-4 last:border-0" id="vmc-block-${i}">
+                        <p class="text-slate-800 mb-2 font-medium">${i+1}. ${v.sentence}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                            ${options.map((opt, optIndex) => `
+                                <label class="flex items-center p-2 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition" id="vmc-label-${i}-${optIndex}">
+                                    <input type="radio" name="vmc-${i}" value="${opt}" class="mr-2 text-pink-600 focus:ring-pink-500">
+                                    <span class="text-sm">${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            mcContainer.innerHTML = mcHtml;
+
+            // 3. Render FITB with Word Bank
+            const fitbContainer = document.getElementById('vocab-fitb-container');
+            vocabFITBAnswers = {};
+            
+            let wordBankHtml = `
+                <div class="mb-6 p-4 bg-white border border-pink-200 rounded-xl shadow-sm">
+                    <h4 class="text-sm font-bold text-pink-800 mb-3"><i class="fa-solid fa-box-open mr-2"></i>Word Bank</h4>
+                    <div class="flex flex-wrap gap-2">
+            `;
+            let shuffledAnswers = shuffleArray([...fitbVocab].map(v => v.en));
+            shuffledAnswers.forEach(word => {
+                wordBankHtml += `<span onclick="toggleWordBank(this)" class="cursor-pointer bg-pink-50 text-pink-700 px-3 py-1 rounded-full border border-pink-100 text-sm font-medium hover:bg-pink-100 transition-colors select-none">${word}</span>`;
+            });
+            wordBankHtml += `</div></div>`;
+
+            let fitbHtml = '<div class="space-y-4">';
+            fitbVocab.forEach((v, i) => {
+                vocabFITBAnswers[`vfitb-${i}`] = v.en;
+                fitbHtml += `
+                    <div class="flex flex-col sm:flex-row sm:items-center bg-slate-50 p-3 rounded border border-slate-200 leading-loose" id="vfitb-block-${i}">
+                        <span class="text-slate-700 flex-1 mb-2 sm:mb-0">${i+1}. ${v.sentence.replace('________', `<input type="text" id="vfitb-${i}" class="border-b-2 border-slate-400 bg-transparent px-2 w-28 sm:w-32 focus:outline-none focus:border-pink-600 text-center font-semibold text-pink-700 mx-1">`)}</span>
+                    </div>
+                `;
+            });
+            fitbHtml += '</div>';
+            
+            fitbContainer.innerHTML = wordBankHtml + fitbHtml;
+        }
+
+        function checkVocabMatching() {
+            Object.keys(vocabMatchingAnswers).forEach(id => {
+                const el = document.getElementById(id);
+                const val = el.value;
+                const correct = vocabMatchingAnswers[id];
+                const parent = el.parentElement;
+                const existingBadge = parent.querySelector('.answer-badge');
+                if(existingBadge) existingBadge.remove();
+
+                if (val === correct) {
+                    el.classList.remove('input-error');
+                    el.classList.add('input-success');
+                } else {
+                    el.classList.remove('input-success');
+                    el.classList.add('input-error');
+                    el.insertAdjacentHTML('afterend', `<span class="answer-badge">Answer: ${correct}</span>`);
+                }
+            });
+        }
+
+        function checkVocabMC() {
+            Object.keys(vocabMCAnswers).forEach(qName => {
+                const i = qName.split('-')[1];
+                const block = document.getElementById(`vmc-block-${i}`);
+                const correctAns = vocabMCAnswers[qName];
+                const checked = document.querySelector(`input[name="${qName}"]:checked`);
+                
+                block.querySelectorAll('label').forEach(lbl => {
+                    lbl.classList.remove('correct-highlight', 'wrong-highlight');
+                });
+
+                block.querySelectorAll(`input[name="${qName}"]`).forEach(input => {
+                    if(input.value === correctAns) {
+                        input.parentElement.classList.add('correct-highlight');
+                    }
+                });
+
+                if (checked && checked.value !== correctAns) {
+                    checked.parentElement.classList.add('wrong-highlight');
+                }
+            });
+        }
+
+        function checkVocabFITB() {
+            Object.keys(vocabFITBAnswers).forEach(id => {
+                const el = document.getElementById(id);
+                const block = document.getElementById(`${id.replace('vfitb-', 'vfitb-block-')}`);
+                const val = el.value.trim().toLowerCase();
+                const correct = vocabFITBAnswers[id].toLowerCase();
+                
+                const existingBadge = block.querySelector('.answer-badge');
+                if(existingBadge) existingBadge.remove();
+
+                if (val === correct) {
+                    el.classList.remove('input-error');
+                    el.classList.add('input-success');
+                } else {
+                    el.classList.remove('input-success');
+                    el.classList.add('input-error');
+                    block.insertAdjacentHTML('beforeend', `<span class="answer-badge mt-2 sm:mt-0">Answer: ${correct}</span>`);
+                }
+            });
+        }
+
+        // --- READING GENERATION ---
+        let currentReading = 0;
+        
+        function switchReading(index) {
+            currentReading = index;
+            document.querySelectorAll('.reading-tab').forEach((el, i) => {
+                if (i === index) {
+                    el.classList.replace('bg-slate-200', 'bg-pink-600');
+                    el.classList.replace('text-slate-700', 'text-white');
+                } else {
+                    el.classList.replace('bg-pink-600', 'bg-slate-200');
+                    el.classList.replace('text-white', 'text-slate-700');
+                }
+            });
+            
+            const r = readings[index];
+            document.getElementById('reading-title').innerText = r.title;
+            document.getElementById('reading-text').innerHTML = r.text;
+            
+            const qContainer = document.getElementById('reading-questions');
+            qContainer.innerHTML = '';
+            
+            r.questions.forEach((q, i) => {
+                let shuffledOptions = shuffleArray([...q.options]);
+                let optionsHtml = shuffledOptions.map((opt, optIndex) => `
+                    <label class="flex items-start p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition" id="rmc-label-${index}-${i}-${optIndex}">
+                        <input type="radio" name="read-q-${index}-${i}" value="${opt}" class="mt-1 mr-3 text-pink-600 focus:ring-pink-500">
+                        <span class="text-sm text-slate-700">${opt}</span>
+                    </label>
+                `).join('');
+                
+                qContainer.innerHTML += `
+                    <div class="mb-6" id="read-block-${index}-${i}">
+                        <p class="font-semibold text-slate-800 mb-3">${i+1}. ${q.question}</p>
+                        <div class="space-y-2">${optionsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkReadingAnswers() {
+            const r = readings[currentReading];
+            r.questions.forEach((q, i) => {
+                const block = document.getElementById(`read-block-${currentReading}-${i}`);
+                const checked = document.querySelector(`input[name="read-q-${currentReading}-${i}"]:checked`);
+                
+                block.querySelectorAll('label').forEach(lbl => {
+                    lbl.classList.remove('correct-highlight', 'wrong-highlight');
+                });
+
+                block.querySelectorAll(`input[name="read-q-${currentReading}-${i}"]`).forEach(input => {
+                    if(input.value === q.answer) {
+                        input.parentElement.classList.add('correct-highlight');
+                    }
+                });
+
+                if (checked && checked.value !== q.answer) {
+                    checked.parentElement.classList.add('wrong-highlight');
+                }
+            });
+        }
+
+        // --- GRAMMAR GENERATION ---
+        function renderGrammar() {
+            const mcContainer = document.getElementById('grammar-mc-container');
+            const fitbContainer = document.getElementById('grammar-fitb-container');
+            let mcHtml = '';
+            let fitbHtml = '';
+
+            grammarQuestions.forEach((q, i) => {
+                if(q.type === 'mc') {
+                    let shuffledOpts = shuffleArray([...q.options]);
+                    let optHtml = shuffledOpts.map((opt, optIndex) => `
+                        <label class="flex items-center p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition" id="gmc-label-${i}-${optIndex}">
+                            <input type="radio" name="gram-q-${i}" value="${opt}" class="mr-3 text-pink-600 focus:ring-pink-500">
+                            <span class="text-sm text-slate-700">${opt}</span>
+                        </label>
+                    `).join('');
+                    
+                    mcHtml += `
+                        <div class="mb-6 pb-6 border-b border-slate-100 last:border-0" id="gmc-block-${i}">
+                            <p class="font-medium text-slate-800 mb-3 text-base sm:text-lg">${i+1}. ${q.q}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">${optHtml}</div>
+                        </div>
+                    `;
+                } else if(q.type === 'fitb') {
+                    fitbHtml += `
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 flex flex-col sm:flex-row sm:items-center leading-loose" id="gfitb-block-${i}">
+                            <span class="font-medium text-slate-800 flex-1">${i+1}. ${q.q.replace(/\[(.*?)\]/, `<input type="text" id="gfitb-${i}" class="border-b-2 border-slate-400 bg-transparent px-2 w-32 sm:w-48 focus:outline-none focus:border-pink-600 text-center text-pink-700 mx-1 sm:mx-2">`)}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            mcContainer.innerHTML = mcHtml;
+            fitbContainer.innerHTML = fitbHtml;
+        }
+
+        function checkGrammarAnswers() {
+            grammarQuestions.forEach((q, i) => {
+                if(q.type === 'mc') {
+                    const block = document.getElementById(`gmc-block-${i}`);
+                    const checked = document.querySelector(`input[name="gram-q-${i}"]:checked`);
+                    
+                    block.querySelectorAll('label').forEach(lbl => {
+                        lbl.classList.remove('correct-highlight', 'wrong-highlight');
+                    });
+
+                    block.querySelectorAll(`input[name="gram-q-${i}"]`).forEach(input => {
+                        if(input.value === q.a) {
+                            input.parentElement.classList.add('correct-highlight');
+                        }
+                    });
+
+                    if (checked && checked.value !== q.a) {
+                        checked.parentElement.classList.add('wrong-highlight');
+                    }
+                } else if(q.type === 'fitb') {
+                    const input = document.getElementById(`gfitb-${i}`);
+                    const block = document.getElementById(`gfitb-block-${i}`);
+                    const val = input.value.trim().toLowerCase();
+                    const correct = q.a.toLowerCase();
+                    
+                    const existingBadge = block.querySelector('.answer-badge');
+                    if(existingBadge) existingBadge.remove();
+
+                    if(val === correct) {
+                        input.classList.remove('input-error');
+                        input.classList.add('input-success');
+                    } else {
+                        input.classList.remove('input-success');
+                        input.classList.add('input-error');
+                        block.insertAdjacentHTML('beforeend', `<span class="answer-badge mt-2 sm:mt-0">Answer: ${correct}</span>`);
+                    }
+                }
+            });
+        }
+
+        // --- WRITING GENERATION ---
+        function renderWritingOptions() {
+            const selector = document.getElementById('writing-selector');
+            writingPrompts.forEach((wp, i) => {
+                selector.innerHTML += `<option value="${i}">${wp.title}</option>`;
+            });
+            changeWritingPrompt();
+        }
+
+        function changeWritingPrompt() {
+            const index = document.getElementById('writing-selector').value;
+            const wp = writingPrompts[index];
+            
+            document.getElementById('writing-instructions').innerHTML = wp.instructions;
+            
+            const structList = document.getElementById('writing-structure');
+            structList.innerHTML = '';
+            wp.structure.forEach(s => {
+                structList.innerHTML += `<li>${s}</li>`;
+            });
+
+            // Update Vocab Table
+            const vocabContainer = document.getElementById('writing-vocab-container');
+            const vocabGrid = document.getElementById('writing-vocab-grid');
+            vocabGrid.innerHTML = '';
+            
+            if(wp.vocab && wp.vocab.length > 0) {
+                vocabContainer.classList.remove('hidden');
+                wp.vocab.forEach(word => {
+                    vocabGrid.innerHTML += `
+                        <span class="bg-white border border-pink-200 text-pink-800 px-3 py-1 rounded-full text-xs font-medium shadow-sm">${word}</span>
+                    `;
+                });
+            } else {
+                vocabContainer.classList.add('hidden');
+            }
+        }
+
+        // --- SPEAKING GENERATION ---
+        function renderSpeaking() {
+            const container = document.getElementById('speaking-container');
+            speakingTopics.forEach(t => {
+                let qHtml = t.questions.map(q => `<li class="text-sm text-slate-600 mb-2 pl-4 relative before:content-['•'] before:text-pink-500 before:absolute before:left-0">${q}</li>`).join('');
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                        <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-xl mb-4 mx-auto">
+                            <i class="fa-solid ${t.icon}"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 text-center">${t.title}</h3>
+                        <ul class="space-y-1">
+                            ${qHtml}
+                        </ul>
+                    </div>
+                `;
+            });
+        }
+
+        // --- FLASHCARDS LOGIC ---
+        let currentCard = 0;
+        let deck = [];
+        const flashcardContainer = document.querySelector('.flashcard-container');
+        const fcEnglish = document.getElementById('fc-english');
+        const fcTurkish = document.getElementById('fc-turkish');
+        const fcCounter = document.getElementById('fc-counter');
+
+        function updateFlashcardText() {
+            if(deck.length === 0) deck = [...allVocab];
+            const card = deck[currentCard];
+            fcEnglish.innerText = card.en;
+            fcTurkish.innerText = card.tr;
+            fcCounter.innerText = `${currentCard + 1} / ${deck.length}`;
+        }
+
+        function flipCard() {
+            flashcardContainer.classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            if (flashcardContainer.classList.contains('flipped')) {
+                flashcardContainer.classList.remove('flipped');
+                setTimeout(() => {
+                    currentCard = (currentCard + 1) % deck.length;
+                    updateFlashcardText();
+                }, 300);
+            } else {
+                currentCard = (currentCard + 1) % deck.length;
+                updateFlashcardText();
+            }
+        }
+
+        function prevCard() {
+            if (flashcardContainer.classList.contains('flipped')) {
+                flashcardContainer.classList.remove('flipped');
+                setTimeout(() => {
+                    currentCard = (currentCard - 1 + deck.length) % deck.length;
+                    updateFlashcardText();
+                }, 300);
+            } else {
+                currentCard = (currentCard - 1 + deck.length) % deck.length;
+                updateFlashcardText();
+            }
+        }
+
+        function shuffleCards() {
+            deck = shuffleArray([...allVocab]);
+            currentCard = 0;
+            if (flashcardContainer.classList.contains('flipped')) {
+                flashcardContainer.classList.remove('flipped');
+                setTimeout(updateFlashcardText, 300);
+            } else {
+                updateFlashcardText();
+            }
+        }
+
+        // Initialize App
+        window.onload = function() {
+            init();
+        };
+    </script>
+</body>
+</html>
