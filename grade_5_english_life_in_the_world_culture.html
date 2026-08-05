@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 5 - Theme 14: Life in the World & Culture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #eef2ff; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e0e7ff; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        
+        .content-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; font-size: 0.95rem; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+        .content-table th { background-color: #312e81; color: white; padding: 12px 16px; text-align: left; font-weight: 600; }
+        .content-table td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; background-color: white; }
+        .content-table tr:last-child td { border-bottom: none; }
+        .content-table tr:nth-child(even) td { background-color: #f8fafc; }
+        .content-table tr:hover td { background-color: #f1f5f9; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const VOCAB_WORDS = [
+            { en: "capital", tr: "başkent" }, { en: "border", tr: "sınır" }, { en: "nation", tr: "ulus / millet" },
+            { en: "location", tr: "konum" }, { en: "population", tr: "nüfus" }, { en: "skyscraper", tr: "gökdelen" },
+            { en: "architecture", tr: "mimari" }, { en: "exhibition", tr: "sergi" }, { en: "sculpture", tr: "heykel" },
+            { en: "statue", tr: "heykel / anıt" }, { en: "scenery", tr: "manzara" }, { en: "city centre", tr: "şehir merkezi" },
+            { en: "town hall", tr: "belediye binası" }, { en: "stadium", tr: "stadyum" }, { en: "queue", tr: "kuyruk / sıra" },
+            { en: "athlete", tr: "atlet / sporcu" }, { en: "champion", tr: "şampiyon" }, { en: "gold medal", tr: "altın madalya" },
+            { en: "fair play", tr: "dürüst oyun" }, { en: "compete", tr: "rekabet etmek" }, { en: "cheat", tr: "hile yapmak" },
+            { en: "take part", tr: "katılmak" }, { en: "instructor", tr: "eğitmen" }, { en: "locker room", tr: "soyunma odası" },
+            { en: "court", tr: "saha / kort" }, { en: "attract", tr: "ilgi çekmek" }, { en: "represent", tr: "temsil etmek" },
+            { en: "typical", tr: "tipik" }, { en: "luxury", tr: "lüks" }, { en: "modern", tr: "modern" },
+            { en: "impressive", tr: "etkileyici" }, { en: "competitive", tr: "rekabetçi" }, { en: "extreme sport", tr: "ekstrem spor" },
+            { en: "join in", tr: "katılmak (aktiviteye)" }, { en: "record holder", tr: "rekor sahibi" }
+        ];
+
+        const TOPICS = [
+            {
+                id: 'vocabulary',
+                title: 'Vocabulary (Kelime Bilgisi)',
+                wordBank: ["capital", "skyscraper", "athlete", "exhibition", "cheat"],
+                explanation: `
+                    <h3 class="text-xl font-bold text-indigo-900 mb-2">Theme 14 - Life in the World & Culture</h3>
+                    <p class="mb-4 text-slate-600">Aşağıdaki tabloda dünya başkentleri, simgesel yapılar ve spor kültürü ile ilgili kelimeleri bulabilirsiniz.</p>
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>English (İngilizce)</th>
+                                <th>Turkish (Türkçe)</th>
+                                <th>Category (Kategori)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>capital / nation</strong></td><td>başkent / ulus</td><td>Capitals & Countries</td></tr>
+                            <tr><td><strong>border / population</strong></td><td>sınır / nüfus</td><td>Capitals & Countries</td></tr>
+                            <tr><td><strong>architecture / skyscraper</strong></td><td>mimari / gökdelen</td><td>Landmarks & Cities</td></tr>
+                            <tr><td><strong>exhibition / sculpture</strong></td><td>sergi / heykel</td><td>Landmarks & Cities</td></tr>
+                            <tr><td><strong>town hall / queue</strong></td><td>belediye binası / sıra</td><td>Landmarks & Cities</td></tr>
+                            <tr><td><strong>athlete / champion</strong></td><td>sporcu / şampiyon</td><td>Sports & Culture</td></tr>
+                            <tr><td><strong>fair play / cheat</strong></td><td>dürüst oyun / hile yapmak</td><td>Sports & Culture</td></tr>
+                            <tr><td><strong>take part / compete</strong></td><td>katılmak / rekabet etmek</td><td>Sports & Culture</td></tr>
+                            <tr><td><strong>court / locker room</strong></td><td>saha (kort) / soyunma odası</td><td>Sports & Culture</td></tr>
+                            <tr><td><strong>impressive / luxury</strong></td><td>etkileyici / lüks</td><td>Adjectives</td></tr>
+                        </tbody>
+                    </table>
+                `,
+                questions: [
+                    { type: 'fill', q: "Paris is the _____ city of France, famous for its museums and architecture.", answer: "capital" },
+                    { type: 'fill', q: "The tall _____ in the city centre is over 100 floors high.", answer: "skyscraper" },
+                    { type: 'fill', q: "It is against the rules to _____ during an examination or a sports match.", answer: "cheat" },
+                    { type: 'fill', q: "There is an amazing art _____ at the museum showing modern paintings.", answer: "exhibition" },
+                    { type: 'fill', q: "Usain Bolt is a famous _____ who won many gold medals.", answer: "athlete" },
+                    { type: 'mcq', q: "What is the Turkish for 'fair play'?", options: ["Hile yapmak", "Dürüst oyun", "Oyun alanı", "Spor salonu"], answer: 1 },
+                    { type: 'mcq', q: "Translate 'mimari' into English:", options: ["Sculpture", "Border", "Architecture", "Scenery"], answer: 2 },
+                    { type: 'mcq', q: "Which word means 'rekabet etmek'?", options: ["Represent", "Attract", "Compete", "Join in"], answer: 2 },
+                    { type: 'mcq', q: "A 'queue' is a ______ of people waiting for something.", options: ["line (sıra)", "building", "statue", "stadium"], answer: 0 },
+                    { type: 'mcq', q: "Which verb means 'katılmak (bir etkinliğe vb.)'?", options: ["Locate", "Take part", "Decorate", "State"], answer: 1 },
+                    { type: 'mcq', q: "Match the meaning: The number of people living in a city or country.", options: ["Population", "Nation", "Location", "Border"], answer: 0 },
+                    { type: 'mcq', q: "Match the meaning: A room where athletes change their clothes.", options: ["Town hall", "Locker room", "Exhibition", "Court"], answer: 1 },
+                    { type: 'mcq', q: "Match the meaning: Very beautiful or extremely good.", options: ["Typical", "Old-fashioned", "Impressive", "Competitive"], answer: 2 },
+                    { type: 'mcq', q: "Match the meaning: A prize given to the winner of a sports competition.", options: ["Statue", "Gold medal", "Skyscraper", "Scenery"], answer: 1 },
+                    { type: 'mcq', q: "Match the meaning: To draw someone's attention or interest.", options: ["Attract", "Cheat", "Represent", "Rest"], answer: 0 }
+                ]
+            },
+            
+            {
+                id: 'grammar',
+                title: 'Grammar: Reported Speech & Modals',
+                explanation: `
+                    <h3 class="text-xl font-bold text-indigo-900 mb-2">Important Grammar Rules</h3>
+                    <p class="mb-4 text-slate-600">Bu ünitede <strong>Reported Speech (Dolaylı Anlatım)</strong> ve <strong>Modals of Obligation (Zorunluluk Bildiren Kipler)</strong> konularını öğreneceğiz.</p>
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 p-4 border border-indigo-200 rounded-lg">
+                            <h4 class="font-bold text-indigo-800 mb-2">1. Reported Speech (Dolaylı Anlatım - Geniş ve Gelecek Zaman)</h4>
+                            <p class="text-slate-700 text-sm mb-2">Birinin söylediği bir şeyi başkasına aktarırken kullanırız. Genel geçer doğrular değişmeden aktarılabilir, gelecek zaman planlarında ise <strong>will</strong> yerine <strong>would</strong> dönüşümü yapılır.</p>
+                            <ul class="list-disc pl-5 text-indigo-900 text-sm space-y-1">
+                                <li><strong>Direct:</strong> "The population of Tokyo is very large." <br/><strong>Reported:</strong> The guide said that the population of Tokyo <strong>is</strong> very large.</li>
+                                <li><strong>Direct:</strong> "The match will take place in London." <br/><strong>Reported:</strong> The organiser stated that the match <strong>would</strong> take place in London.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-amber-50 p-4 border border-amber-200 rounded-lg">
+                            <h4 class="font-bold text-amber-800 mb-2">2. Modals: Obligation, Necessity & Prohibition</h4>
+                            <ul class="list-disc pl-5 text-amber-900 text-sm space-y-2">
+                                <li><strong>Must:</strong> Güçlü zorunluluk (Kişisel). <em>Visitors must take a guided tour.</em></li>
+                                <li><strong>Mustn't:</strong> Kesin yasak. <em>Athletes mustn't cheat in the games.</em></li>
+                                <li><strong>Need / Needed to:</strong> İhtiyaç, gereklilik. <em>The cricketer needed extra coaching last year.</em></li>
+                                <li><strong>Needn't:</strong> Gerek yok. <em>You needn't bring your own racket.</em></li>
+                                <li><strong>Ought to:</strong> Tavsiye / Görev. <em>We ought to respect different cultures.</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                questions: [
+                    { type: 'fill', q: "The teacher stated that the students _____ (will) visit the new exhibition tomorrow.", answer: "would" },
+                    { type: 'fill', q: "The guide said _____ the architecture of Rome is very old and impressive.", answer: "that" },
+                    { type: 'mcq', q: "The news reporter stated that the Olympic Games _____ take place in Paris next year.", options: ["are", "would", "will be", "is going"], answer: 1 },
+                    { type: 'mcq', q: "Ahmet said that Beijing _____ the capital of China.", options: ["is", "were", "are", "be"], answer: 0 },
+                    { type: 'mcq', q: "The coach announced that the team _____ travel to Madrid for the championship.", options: ["will", "can", "would", "are"], answer: 2 },
+                    { type: 'mcq', q: "You _____ touch the historical sculptures in the museum. It is strictly forbidden!", options: ["must", "mustn't", "needn't", "ought to"], answer: 1 },
+                    { type: 'mcq', q: "Last year, the young swimmer _____ practice every day to win the gold medal.", options: ["needs to", "must", "needed to", "ought to"], answer: 2 },
+                    { type: 'mcq', q: "We _____ buy tickets online because the entrance to the town hall is completely free today.", options: ["must", "mustn't", "needn't", "ought to"], answer: 2 },
+                    { type: 'mcq', q: "Athletes _____ show fair play and respect their opponents during the contest.", options: ["must", "mustn't", "needn't", "needed to"], answer: 0 },
+                    { type: 'mcq', q: "You _____ to rest if you feel tired during the extreme sports event.", options: ["must", "ought", "should", "needn't"], answer: 1 },
+                    { type: 'mcq', q: "The principal said that the students _____ to wear their uniforms.", options: ["needed", "must", "ought", "would"], answer: 0 },
+                    { type: 'mcq', q: "They _____ cheat on the exam, or they will be disqualified.", options: ["must", "need to", "mustn't", "needn't"], answer: 2 },
+                    { type: 'mcq', q: "The guide stated that the bus _____ leave at 9 AM.", options: ["will", "would", "is", "must"], answer: 1 },
+                    { type: 'mcq', q: "If you want to join the club, you _____ to fill out this form.", options: ["must", "should", "need", "ought"], answer: 2 },
+                    { type: 'mcq', q: "The manager said that the new stadium _____ impressive.", options: ["is", "be", "were", "are"], answer: 0 }
+                ]
+            },
+            
+            {
+                id: 'reading1',
+                title: 'Reading 1: A Trip to Capitals',
+                explanation: `
+                    <h3 class="text-xl font-bold text-indigo-900 mb-2">Read the text carefully!</h3>
+                    <p class="text-slate-600 mb-4">Aşağıdaki metin, dünyaca ünlü başkentler ve simgesel yapılar hakkında bilgiler içermektedir. Okuduktan sonra "Exercises" sekmesinden soruları çözmeyi unutmayın!</p>
+                `,
+                readingText: `A Cultural Journey Across Capitals\n\nLast summer, our class took a virtual tour to explore famous capitals of the world. Our geography teacher said that London is the capital of the UK and it attracts millions of tourists every year. We saw pictures of Big Ben and a massive modern skyscraper called The Shard.\n\nThen, the presentation took us to Paris, France. The guide stated that we would see typical French architecture there. He warned us, "Visitors mustn't touch the art in the exhibitions." We also learned about Rome, Italy. The teacher explained that Rome is famous for its ancient sculptures and statues.\n\n"You ought to respect the cultural heritage of every nation," she added. I was so impressed by the scenery. She stated that next year, we would learn about Asian capitals like Tokyo and Beijing, which have huge populations and unique cultures.`,
+                questions: [
+                    { type: 'mcq', q: "Which city was introduced as the capital of the UK?", options: ["Rome", "Paris", "London", "Beijing"], answer: 2 },
+                    { type: 'mcq', q: "What did the guide state about Paris?", options: ["It has a small population.", "Visitors would see typical French architecture.", "There are no museums.", "It is in Asia."], answer: 1 },
+                    { type: 'mcq', q: "According to the guide, what is the strict rule in the exhibitions?", options: ["Visitors must run.", "Visitors mustn't touch the art.", "Visitors needn't buy tickets.", "Visitors must take photos."], answer: 1 },
+                    { type: 'mcq', q: "Rome is famous for its _____.", options: ["modern skyscrapers", "ancient sculptures and statues", "extreme sports", "huge populations"], answer: 1 },
+                    { type: 'mcq', q: "What did the teacher state they would do next year?", options: ["Visit Rome.", "Build a skyscraper.", "Learn about Asian capitals like Tokyo.", "Play sports in London."], answer: 2 }
+                ]
+            },
+            {
+                id: 'reading2',
+                title: 'Reading 2: Spirit of the Games',
+                explanation: `
+                    <h3 class="text-xl font-bold text-indigo-900 mb-2">Read the text carefully!</h3>
+                    <p class="text-slate-600 mb-4">Aşağıdaki metin, spor etkinlikleri, şampiyonlar ve fair play (dürüst oyun) kültürü hakkındadır.</p>
+                `,
+                readingText: `The Spirit of Fair Play\n\nSports events bring people from different borders and nations together. The Olympic Games are the biggest example of this. Athletes travel to the host country to compete for the gold medal.\n\nBefore the championship started, the head coach stated that the athletes would rest in the locker room. He also reminded everyone of the most important rule: "You must play by the rules and you mustn't cheat. Fair play is more important than winning."\n\nA young cyclist from Spain, Carlos, joined in the race. During the track event, another competitor fell down. Instead of passing him to win the race, Carlos stopped and helped him up. He lost the gold medal, but the spectators cheered for him loudly.\n\nLater, the sports committee announced that Carlos would receive a special fair play award. He proved that being a true champion is about having a good character, not just holding records.`,
+                questions: [
+                    { type: 'mcq', q: "Why do athletes travel to the host country during the Olympic Games?", options: ["To visit museums", "To rest in the locker room", "To compete for the gold medal", "To take photos of skyscrapers"], answer: 2 },
+                    { type: 'mcq', q: "What did the head coach state before the championship?", options: ["That the athletes would rest in the locker room.", "That cheating is allowed.", "That the game is cancelled.", "That they must buy tickets."], answer: 0 },
+                    { type: 'mcq', q: "According to the coach, what is the most important rule?", options: ["You must win at all costs.", "You mustn't cheat and must show fair play.", "You needn't wear a uniform.", "You ought to run fast."], answer: 1 },
+                    { type: 'mcq', q: "What did Carlos do when another competitor fell down?", options: ["He laughed at him.", "He ran faster to win.", "He stopped and helped him up.", "He left the track."], answer: 2 },
+                    { type: 'mcq', q: "What did the sports committee announce later?", options: ["That Carlos was disqualified.", "That Carlos would receive a special fair play award.", "That the race would restart.", "That Carlos needed extra training."], answer: 1 }
+                ]
+            }
+        ];
+
+        const MILLIONAIRE_QUESTIONS = [
+            { q: "What is the Turkish meaning of 'skyscraper'?", options: ["Heykel", "Gökdelen", "Sergi", "Başkent"], answer: 1 },
+            { q: "The guide stated that the museum _____ close at 5 PM.", options: ["will", "is", "would", "are"], answer: 2 },
+            { q: "Which word means 'altın madalya'?", options: ["Silver medal", "Gold medal", "Fair play", "Record holder"], answer: 1 },
+            { q: "Athletes _____ cheat in the Olympic Games.", options: ["ought to", "must", "need to", "mustn't"], answer: 3 },
+            { q: "The place where athletes change their clothes is the _____.", options: ["Locker room", "Town hall", "Exhibition", "Border"], answer: 0 },
+            { q: "The word 'impressive' means _____.", options: ["Sıradan", "Lüks", "Etkileyici", "Tipik"], answer: 2 },
+            { q: "The trainer said _____ swimming is very good for health.", options: ["this", "that", "those", "which"], answer: 1 },
+            { q: "Which word means 'mimari'?", options: ["Architecture", "Sculpture", "Queue", "Nation"], answer: 0 },
+            { q: "If you don't have enough skills, you _____ extra training.", options: ["mustn't", "need", "needn't", "would"], answer: 1 },
+            { q: "Beijing is the _____ of China.", options: ["capital", "border", "athlete", "scenery"], answer: 0 },
+            { q: "To play a game honestly without breaking the rules is called _____.", options: ["Extreme sport", "Fair play", "Cheating", "Qualification"], answer: 1 },
+            { q: "Washington D.C. is located in which nation?", options: ["United Kingdom", "France", "Japan", "United States"], answer: 3 }
+        ];
+
+        const TIC_TAC_TOE_QUESTIONS = [
+            { q: "Meaning of 'athlete'?", options: ["sporcu", "hakem", "saha"], answer: 0 },
+            { q: "You _____ respect other cultures.", options: ["must", "mustn't", "needn't"], answer: 0 },
+            { q: "Meaning of 'exhibition'?", options: ["sergi", "mimari", "hedef"], answer: 0 },
+            { q: "He said that he _____ come to the match.", options: ["would", "will", "is"], answer: 0 },
+            { q: "Meaning of 'compete'?", options: ["katılmak", "rekabet etmek", "dinlenmek"], answer: 1 },
+            { q: "Meaning of 'queue'?", options: ["sıra / kuyruk", "madalya", "sınır"], answer: 0 },
+            { q: "Meaning of 'sculpture'?", options: ["mimari", "heykel", "şampiyon"], answer: 1 },
+            { q: "Visitors _____ pay; it's free today.", options: ["must", "ought to", "needn't"], answer: 2 },
+            { q: "Meaning of 'cheat'?", options: ["kazanmak", "katılmak", "hile yapmak"], answer: 2 }
+        ];
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('learn');
+            const [activeTopicId, setActiveTopicId] = useState(TOPICS[0].id);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+            const handleTabChange = (tab, topicId = null) => {
+                setActiveTab(tab);
+                if (topicId) setActiveTopicId(topicId);
+                setIsMobileMenuOpen(false);
+            };
+
+            return (
+                <div className="flex flex-col md:flex-row h-screen font-sans text-slate-800 bg-indigo-50 overflow-hidden">
+                    {/* Mobile Header */}
+                    <div className="md:hidden flex items-center justify-between bg-indigo-950 p-4 text-white shadow-md z-30">
+                        <h1 className="text-lg font-black flex items-center gap-2 text-amber-400">
+                            <i className="fas fa-globe-americas"></i> World & Culture
+                        </h1>
+                        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-2xl focus:outline-none p-2">
+                            <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+                        </button>
+                    </div>
+
+                    <nav className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 absolute md:relative top-[68px] md:top-0 left-0 w-full md:w-72 bg-indigo-950 text-indigo-100 flex flex-col shadow-2xl border-r border-indigo-800 z-20 h-[calc(100vh-68px)] md:h-screen transition-transform duration-300 ease-in-out`}>
+                        <div className="hidden md:block p-6 bg-indigo-900 border-b border-indigo-800 shrink-0">
+                            <h1 className="text-xl font-black flex items-center gap-2 text-amber-400">
+                                <i className="fas fa-globe-americas"></i> World & Culture
+                            </h1>
+                            <p className="text-indigo-300 text-sm mt-1 font-medium">Grade 5 - Theme 14</p>
+                        </div>
+
+                        <div className="flex-1 py-4 overflow-y-auto">
+                            <div className="px-5 text-xs font-black text-amber-500 uppercase tracking-widest mb-3">
+                                Learn & Solve
+                            </div>
+                            {TOPICS.map(topic => (
+                                <button
+                                    key={topic.id}
+                                    onClick={() => handleTabChange('learn', topic.id)}
+                                    className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                        ${activeTab === 'learn' && activeTopicId === topic.id ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                                >
+                                    <i className={`fas ${topic.id === 'vocabulary' ? 'fa-passport' : topic.id === 'grammar' ? 'fa-spell-check' : 'fa-book-open'} w-5 text-center`}></i>
+                                    {topic.title}
+                                </button>
+                            ))}
+
+                            <div className="px-5 text-xs font-black text-amber-500 uppercase tracking-widest mt-8 mb-3">
+                                Vocabulary Games
+                            </div>
+                            <button
+                                onClick={() => handleTabChange('matching')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'matching' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-link w-5 text-center"></i> Match the Words
+                            </button>
+                            <button
+                                onClick={() => handleTabChange('scramble')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'scramble' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-random w-5 text-center"></i> Word Scramble
+                            </button>
+
+                            <div className="px-5 text-xs font-black text-amber-500 uppercase tracking-widest mt-8 mb-3">
+                                Master Games
+                            </div>
+                            <button
+                                onClick={() => handleTabChange('tictactoe')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'tictactoe' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-gamepad w-5 text-center"></i> Tic-Tac-Toe
+                            </button>
+                            <button
+                                onClick={() => handleTabChange('millionaire')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'millionaire' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-medal w-5 text-center"></i> Millionaire
+                            </button>
+                            <button
+                                onClick={() => handleTabChange('crossword')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'crossword' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-border-all w-5 text-center"></i> Mini Crossword
+                            </button>
+                            <button
+                                onClick={() => handleTabChange('rescue')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'rescue' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-plane-departure w-5 text-center"></i> Tourist Rescue
+                            </button>
+                            <button
+                                onClick={() => handleTabChange('memory')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'memory' ? 'bg-indigo-800 border-l-4 border-amber-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-th w-5 text-center"></i> Culture Memory
+                            </button>
+                            
+                            <div className="px-5 text-xs font-black text-amber-500 uppercase tracking-widest mt-8 mb-3">
+                                Assessment
+                            </div>
+                            <button
+                                onClick={() => handleTabChange('exam')}
+                                className={`w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors text-sm font-bold
+                                    ${activeTab === 'exam' ? 'bg-indigo-800 border-l-4 border-red-400 text-white shadow-inner' : 'hover:bg-indigo-800 border-l-4 border-transparent text-indigo-200'}`}
+                            >
+                                <i className="fas fa-graduation-cap w-5 text-center"></i> Final Exam
+                            </button>
+                        </div>
+                    </nav>
+
+                    <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-indigo-50 relative z-10 w-full h-[calc(100vh-68px)] md:h-screen">
+                        {activeTab === 'learn' && <TopicView topic={TOPICS.find(t => t.id === activeTopicId)} />}
+                        {activeTab === 'matching' && <MatchingGame />}
+                        {activeTab === 'scramble' && <ScrambleGame />}
+                        {activeTab === 'tictactoe' && <TicTacToeGame />}
+                        {activeTab === 'millionaire' && <MillionaireGame />}
+                        {activeTab === 'crossword' && <CrosswordGame />}
+                        {activeTab === 'rescue' && <TouristRescueGame />}
+                        {activeTab === 'memory' && <CultureMemoryGame />}
+                        {activeTab === 'exam' && <FinalExam />}
+                    </main>
+                </div>
+            );
+        };
+
+        const TopicView = ({ topic }) => {
+            const [subTab, setSubTab] = useState('explanation');
+
+            useEffect(() => {
+                setSubTab('explanation');
+            }, [topic]);
+
+            return (
+                <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-indigo-200 overflow-hidden min-h-[600px] flex flex-col text-slate-800">
+                    <div className="bg-indigo-900 border-b border-indigo-950 p-6 sm:p-8">
+                        <h2 className="text-2xl sm:text-3xl font-black text-amber-400">{topic.title}</h2>
+                    </div>
+                    
+                    <div className="flex flex-wrap sm:flex-nowrap border-b border-slate-200 bg-white sticky top-0 z-10">
+                        <button 
+                            onClick={() => setSubTab('explanation')} 
+                            className={`flex-1 min-w-[33%] py-3 sm:py-4 text-xs sm:text-base text-center font-bold transition-all border-b-4 ${subTab === 'explanation' ? 'bg-amber-50 text-amber-700 border-amber-500' : 'text-slate-500 border-transparent hover:bg-slate-50 hover:text-indigo-700'}`}
+                        >
+                            <i className="fas fa-book-open sm:mr-2 block sm:inline mb-1 sm:mb-0"></i> Explanation
+                        </button>
+                        {topic.readingText && (
+                            <button 
+                                onClick={() => setSubTab('reading')} 
+                                className={`flex-1 min-w-[33%] py-3 sm:py-4 text-xs sm:text-base text-center font-bold transition-all border-b-4 ${subTab === 'reading' ? 'bg-amber-50 text-amber-700 border-amber-500' : 'text-slate-500 border-transparent hover:bg-slate-50 hover:text-indigo-700'}`}
+                            >
+                                <i className="fas fa-file-alt sm:mr-2 block sm:inline mb-1 sm:mb-0"></i> Reading
+                            </button>
+                        )}
+                        <button 
+                            onClick={() => setSubTab('quiz')} 
+                            className={`flex-1 min-w-[33%] py-3 sm:py-4 text-xs sm:text-base text-center font-bold transition-all border-b-4 ${subTab === 'quiz' ? 'bg-amber-50 text-amber-700 border-amber-500' : 'text-slate-500 border-transparent hover:bg-slate-50 hover:text-indigo-700'}`}
+                        >
+                            <i className="fas fa-tasks sm:mr-2 block sm:inline mb-1 sm:mb-0"></i> Exercises
+                        </button>
+                    </div>
+
+                    <div className="p-5 sm:p-8 flex-1 overflow-y-auto">
+                        {subTab === 'explanation' && (
+                            <div className="prose max-w-none text-slate-700 leading-relaxed text-sm sm:text-base" 
+                                dangerouslySetInnerHTML={{ __html: topic.explanation }} 
+                            />
+                        )}
+                        
+                        {subTab === 'reading' && topic.readingText && (
+                            <div className="bg-indigo-50 p-5 sm:p-8 rounded-xl border border-indigo-200 shadow-sm flex flex-col md:flex-row gap-6 items-start">
+                                <div className="bg-white p-4 sm:p-5 rounded-full shadow-md flex-shrink-0 border border-indigo-100 self-center md:self-auto">
+                                    <i className="fas fa-map-marked-alt text-3xl text-indigo-600"></i>
+                                </div>
+                                <div className="text-base sm:text-lg text-slate-800 leading-loose font-medium whitespace-pre-line">
+                                    {topic.readingText}
+                                </div>
+                            </div>
+                        )}
+
+                        {subTab === 'quiz' && <Quiz questions={topic.questions} wordBank={topic.wordBank} />}
+                    </div>
+                </div>
+            );
+        };
+
+        const Quiz = ({ questions, wordBank }) => {
+            const [answers, setAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+
+            useEffect(() => {
+                setAnswers({});
+                setShowResults(false);
+            }, [questions]);
+
+            const handleSelect = (qIndex, value) => {
+                if (showResults) return;
+                setAnswers(prev => ({ ...prev, [qIndex]: value }));
+            };
+
+            const calculateScore = () => {
+                let score = 0;
+                questions.forEach((q, i) => {
+                    if (q.type === 'mcq') {
+                        if (answers[i] === q.answer) score++;
+                    } else if (q.type === 'fill') {
+                        const safeAnswer = answers[i] || '';
+                        if (safeAnswer.toLowerCase().trim() === q.answer.toLowerCase()) score++;
+                    }
+                });
+                return score;
+            };
+
+            const isAllAnswered = () => {
+                return questions.every((q, i) => answers[i] !== undefined && answers[i] !== "");
+            };
+
+            return (
+                <div className="space-y-6">
+                    {wordBank && wordBank.length > 0 && !showResults && (
+                        <div className="bg-amber-50 border-2 border-amber-200 p-5 rounded-xl mb-8 shadow-sm">
+                            <h4 className="text-amber-900 font-bold mb-3 flex items-center gap-2"><i className="fas fa-archive text-amber-500"></i> Word Bank (Fill in the blanks)</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {wordBank.map((word, idx) => (
+                                    <span key={idx} className="bg-white px-4 py-2 rounded-lg border border-slate-200 text-indigo-700 font-bold shadow-sm">{word}</span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {questions.map((q, qIndex) => {
+                        const userAnswer = answers[qIndex];
+                        let isCorrect = false;
+                        
+                        if (showResults) {
+                            if (q.type === 'mcq') {
+                                isCorrect = userAnswer === q.answer;
+                            } else {
+                                const safeAnswer = userAnswer || '';
+                                isCorrect = safeAnswer.toLowerCase().trim() === q.answer.toLowerCase();
+                            }
+                        }
+
+                        return (
+                            <div key={qIndex} className={`p-6 rounded-xl border-2 transition-all ${showResults ? (isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200') : 'bg-slate-50 border-slate-200 hover:border-indigo-200 shadow-sm'}`}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <p className="font-bold text-lg text-slate-800">
+                                        <span className="text-amber-600 mr-2">{qIndex + 1}.</span> 
+                                        {q.q}
+                                    </p>
+                                    {showResults && (isCorrect ? <i className="fas fa-check-circle text-2xl text-green-500"></i> : <i className="fas fa-times-circle text-2xl text-red-500"></i>)}
+                                </div>
+                                
+                                {q.type === 'mcq' && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {q.options.map((opt, oIndex) => {
+                                            const isSelected = userAnswer === oIndex;
+                                            const isCorrectOption = oIndex === q.answer;
+                                            
+                                            let btnClass = "p-4 rounded-lg border-2 text-left font-semibold transition-all ";
+                                            if (!showResults) {
+                                                btnClass += isSelected ? "bg-indigo-100 border-indigo-500 text-indigo-900" : "bg-white border-slate-200 hover:bg-indigo-50 text-slate-600";
+                                            } else {
+                                                if (isCorrectOption) {
+                                                    btnClass += "bg-green-100 border-green-500 text-green-800";
+                                                } else if (isSelected && !isCorrectOption) {
+                                                    btnClass += "bg-red-100 border-red-500 text-red-800 line-through opacity-70";
+                                                } else {
+                                                    btnClass += "bg-white border-slate-200 opacity-50";
+                                                }
+                                            }
+
+                                            return (
+                                                <button key={oIndex} onClick={() => handleSelect(qIndex, oIndex)} disabled={showResults} className={btnClass}>
+                                                    {opt}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {q.type === 'fill' && (
+                                    <div>
+                                        <input 
+                                            type="text" 
+                                            value={userAnswer || ""}
+                                            onChange={(e) => handleSelect(qIndex, e.target.value)}
+                                            disabled={showResults}
+                                            placeholder="Type the word here..."
+                                            className={`w-full p-4 rounded-lg border-2 font-bold outline-none focus:ring-0 transition-colors ${showResults ? (isCorrect ? 'border-green-500 bg-green-50 text-green-800' : 'border-red-500 bg-red-50 text-red-800') : 'border-slate-300 focus:border-indigo-500 text-slate-800'}`}
+                                        />
+                                        {showResults && !isCorrect && (
+                                            <div className="mt-3 inline-block bg-red-100 text-red-800 px-4 py-2 rounded-lg text-sm font-bold border border-red-200">
+                                                Correct Answer: <span className="uppercase">{q.answer}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                    
+                    {!showResults ? (
+                        <button
+                            onClick={() => setShowResults(true)}
+                            disabled={!isAllAnswered()}
+                            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black text-lg hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl mt-8"
+                        >
+                            <i className="fas fa-paper-plane mr-2"></i> Check Answers
+                        </button>
+                    ) : (
+                        <div className="text-center p-8 bg-indigo-900 rounded-2xl shadow-xl border border-indigo-700 mt-8">
+                            <h3 className="text-3xl font-black text-white mb-2">Your Score: <span className="text-amber-400">{calculateScore()} / {questions.length}</span></h3>
+                            <p className="text-slate-300 text-lg mb-6 font-medium">
+                                {calculateScore() === questions.length ? 'Outstanding! You are a global citizen.' : 'Good effort! Review the mistakes and try again.'}
+                            </p>
+                            <button
+                                onClick={() => { setAnswers({}); setShowResults(false); }}
+                                className="px-8 py-4 bg-amber-500 text-indigo-900 rounded-full font-bold hover:bg-amber-400 transition-transform hover:scale-105 shadow-lg"
+                            >
+                                <i className="fas fa-redo mr-2"></i> Try Again
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const MatchingGame = () => {
+            const [roundWords, setRoundWords] = useState([]);
+            const [shuffledEn, setShuffledEn] = useState([]);
+            const [shuffledTr, setShuffledTr] = useState([]);
+            const [selectedEn, setSelectedEn] = useState(null);
+            const [selectedTr, setSelectedTr] = useState(null);
+            const [matchedPairs, setMatchedPairs] = useState([]);
+            const [errorPair, setErrorPair] = useState(false);
+
+            const startRound = () => {
+                const shuffled = [...VOCAB_WORDS].sort(() => 0.5 - Math.random()).slice(0, 5);
+                setRoundWords(shuffled);
+                setShuffledEn([...shuffled].sort(() => 0.5 - Math.random()));
+                setShuffledTr([...shuffled].sort(() => 0.5 - Math.random()));
+                setSelectedEn(null);
+                setSelectedTr(null);
+                setMatchedPairs([]);
+            };
+
+            useEffect(() => { startRound(); }, []);
+
+            useEffect(() => {
+                if (selectedEn && selectedTr) {
+                    const isMatch = roundWords.find(w => w.en === selectedEn && w.tr === selectedTr);
+                    if (isMatch) {
+                        setMatchedPairs(prev => [...prev, selectedEn]);
+                        setSelectedEn(null);
+                        setSelectedTr(null);
+                    } else {
+                        setErrorPair(true);
+                        setTimeout(() => {
+                            setSelectedEn(null);
+                            setSelectedTr(null);
+                            setErrorPair(false);
+                        }, 600);
+                    }
+                }
+            }, [selectedEn, selectedTr, roundWords]);
+
+            const isComplete = matchedPairs.length === 5 && roundWords.length > 0;
+
+            return (
+                <div className="max-w-4xl mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-indigo-200">
+                    <div className="flex justify-between items-center mb-8 border-b border-indigo-100 pb-4">
+                        <h2 className="text-3xl font-black text-indigo-900 flex items-center gap-3">
+                            <i className="fas fa-link text-amber-500"></i> Word Matching
+                        </h2>
+                        <button onClick={startRound} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg font-bold hover:bg-indigo-100 transition-colors">
+                            <i className="fas fa-sync-alt"></i> Skip / Refresh
+                        </button>
+                    </div>
+                    
+                    <p className="text-slate-600 mb-8 font-medium">Select an English word and its correct Turkish meaning to create a match.</p>
+
+                    {isComplete ? (
+                        <div className="text-center bg-amber-50 p-12 rounded-2xl border-2 border-amber-200 animate-pulse">
+                            <i className="fas fa-check-circle text-6xl text-amber-500 mb-6 block"></i>
+                            <h3 className="text-3xl font-black text-amber-900 mb-6">Perfect Match!</h3>
+                            <button onClick={startRound} className="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold text-lg hover:bg-indigo-700 shadow-xl transition-transform hover:scale-105">
+                                Play Next Round
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-slate-800">
+                            <div className="flex flex-col gap-4">
+                                <h4 className="font-black text-indigo-500 text-center uppercase tracking-widest bg-indigo-50 py-2 rounded-lg border border-indigo-100">English</h4>
+                                {shuffledEn.map((item, idx) => {
+                                    const isMatched = matchedPairs.includes(item.en);
+                                    const isSelected = selectedEn === item.en;
+                                    return (
+                                        <button
+                                            key={`en-${idx}`}
+                                            onClick={() => !isMatched && setSelectedEn(item.en)}
+                                            disabled={isMatched}
+                                            className={`p-5 rounded-xl font-bold text-lg transition-all border-2 text-center shadow-sm
+                                                ${isMatched ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed transform scale-95' : 
+                                                isSelected ? (errorPair ? 'bg-red-50 border-red-400 text-red-600' : 'bg-indigo-600 border-indigo-700 text-white shadow-md transform scale-105 ring-4 ring-indigo-200') : 
+                                                'bg-white border-slate-300 text-slate-700 hover:border-indigo-400 hover:text-indigo-700'}
+                                            `}
+                                        >
+                                            {item.en}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <h4 className="font-black text-indigo-500 text-center uppercase tracking-widest bg-indigo-50 py-2 rounded-lg border border-indigo-100">Türkçe</h4>
+                                {shuffledTr.map((item, idx) => {
+                                    const isMatched = matchedPairs.includes(item.en);
+                                    const isSelected = selectedTr === item.tr;
+                                    return (
+                                        <button
+                                            key={`tr-${idx}`}
+                                            onClick={() => !isMatched && setSelectedTr(item.tr)}
+                                            disabled={isMatched}
+                                            className={`p-5 rounded-xl font-bold text-lg transition-all border-2 text-center shadow-sm
+                                                ${isMatched ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed transform scale-95' : 
+                                                isSelected ? (errorPair ? 'bg-red-50 border-red-400 text-red-600' : 'bg-amber-500 border-amber-600 text-indigo-900 shadow-md transform scale-105 ring-4 ring-amber-200') : 
+                                                'bg-white border-slate-300 text-slate-700 hover:border-amber-400 hover:text-amber-700'}
+                                            `}
+                                        >
+                                            {item.tr}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const ScrambleGame = () => {
+            const [currentWord, setCurrentWord] = useState(null);
+            const [scrambledLetters, setScrambledLetters] = useState([]);
+            const [userGuess, setUserGuess] = useState([]);
+            const [isCorrect, setIsCorrect] = useState(false);
+            const [isError, setIsError] = useState(false);
+
+            const nextWord = () => {
+                let wordObj;
+                do {
+                    wordObj = VOCAB_WORDS[Math.floor(Math.random() * VOCAB_WORDS.length)];
+                } while (wordObj.en.length < 3 || wordObj.en.includes(" ") || wordObj.en.includes("-")); 
+                
+                setCurrentWord(wordObj);
+                const letters = wordObj.en.toUpperCase().split('').map((char, index) => ({ char, id: index }));
+                setScrambledLetters([...letters].sort(() => 0.5 - Math.random()));
+                setUserGuess([]);
+                setIsCorrect(false);
+                setIsError(false);
+            };
+
+            useEffect(() => { nextWord(); }, []);
+
+            const handleSelectLetter = (letterObj) => {
+                if (isCorrect) return;
+                setScrambledLetters(prev => prev.filter(l => l.id !== letterObj.id));
+                const newGuess = [...userGuess, letterObj];
+                setUserGuess(newGuess);
+
+                if (newGuess.length === currentWord.en.length) {
+                    const guessStr = newGuess.map(l => l.char).join('');
+                    if (guessStr === currentWord.en.toUpperCase()) {
+                        setIsCorrect(true);
+                    } else {
+                        setIsError(true);
+                        setTimeout(() => {
+                            setScrambledLetters([...newGuess, ...scrambledLetters].sort(() => 0.5 - Math.random()));
+                            setUserGuess([]);
+                            setIsError(false);
+                        }, 800);
+                    }
+                }
+            };
+
+            const handleUndoLetter = (letterObj) => {
+                if (isCorrect) return;
+                setUserGuess(prev => prev.filter(l => l.id !== letterObj.id));
+                setScrambledLetters(prev => [...prev, letterObj]);
+            };
+
+            if (!currentWord) return null;
+
+            return (
+                <div className="max-w-3xl mx-auto bg-white p-6 sm:p-12 rounded-3xl shadow-xl border border-indigo-200 text-center">
+                    <h2 className="text-2xl sm:text-3xl font-black text-indigo-900 mb-6 sm:mb-8 flex items-center justify-center gap-2 sm:gap-3">
+                        <i className="fas fa-random text-amber-500"></i> Word Scramble
+                    </h2>
+
+                    <div className="bg-indigo-900 border border-indigo-800 rounded-2xl p-4 sm:p-6 mb-8 sm:mb-10 shadow-inner">
+                        <span className="text-amber-400 font-bold uppercase tracking-widest text-xs sm:text-sm block mb-2"><i className="fas fa-search"></i> Clue (Meaning)</span>
+                        <h3 className="text-2xl sm:text-4xl font-black text-white capitalize">{currentWord.tr}</h3>
+                    </div>
+
+                    <div className={`flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 min-h-[60px] sm:min-h-[80px] ${isError ? 'animate-bounce' : ''}`}>
+                        {[...Array(currentWord.en.length)].map((_, i) => {
+                            const letterObj = userGuess[i];
+                            return (
+                                <button
+                                    key={`guess-${i}`}
+                                    onClick={() => letterObj && handleUndoLetter(letterObj)}
+                                    className={`w-10 h-12 sm:w-16 sm:h-20 flex items-center justify-center text-2xl sm:text-4xl font-black rounded-xl border-b-4 transition-all
+                                        ${letterObj 
+                                            ? (isCorrect ? 'bg-amber-500 border-amber-700 text-indigo-900' : isError ? 'bg-red-500 border-red-700 text-white' : 'bg-indigo-800 border-indigo-950 text-white shadow-lg hover:bg-indigo-700') 
+                                            : 'bg-slate-100 border-slate-200 text-transparent'}`}
+                                    disabled={!letterObj || isCorrect}
+                                >
+                                    {letterObj ? letterObj.char : ''}
+                                </button>
+                            )
+                        })}
+                    </div>
+
+                    {isCorrect ? (
+                        <div className="mt-8 animate-pulse">
+                            <button onClick={nextWord} className="px-8 sm:px-10 py-3 sm:py-4 bg-amber-500 text-indigo-900 text-lg sm:text-xl rounded-full font-black hover:bg-amber-400 shadow-xl flex items-center justify-center gap-3 mx-auto transition-transform hover:scale-105">
+                                Next Word <i className="fas fa-plane"></i>
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="h-px bg-indigo-100 w-full mb-6 sm:mb-8"></div>
+                            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                                {scrambledLetters.map((letterObj) => (
+                                    <button
+                                        key={letterObj.id}
+                                        onClick={() => handleSelectLetter(letterObj)}
+                                        className="w-10 h-12 sm:w-16 sm:h-20 flex items-center justify-center text-xl sm:text-3xl font-black bg-white text-indigo-700 border-2 border-indigo-200 border-b-4 rounded-xl hover:bg-indigo-50 hover:border-indigo-400 hover:text-indigo-800 transition-all active:translate-y-1 active:border-b-2 shadow-sm"
+                                    >
+                                        {letterObj.char}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    
+                    {!isCorrect && (
+                        <button onClick={nextWord} className="mt-8 sm:mt-10 text-slate-400 hover:text-indigo-600 font-bold underline">
+                            Skip this word
+                        </button>
+                    )}
+                </div>
+            );
+        };
+
+        const TicTacToeGame = () => {
+            const [gameMode, setGameMode] = useState('1p'); 
+            const [board, setBoard] = useState(Array(9).fill(null));
+            const [gridWords, setGridWords] = useState([]);
+            const [isXNext, setIsXNext] = useState(true);
+            const [winner, setWinner] = useState(null);
+            const [activeQuestion, setActiveQuestion] = useState(null);
+            const [pendingCell, setPendingCell] = useState(null);
+            const [feedback, setFeedback] = useState(null);
+            
+            const initializeGrid = () => {
+                const shuffled = [...VOCAB_WORDS].sort(() => 0.5 - Math.random());
+                setGridWords(shuffled.slice(0, 9));
+                setBoard(Array(9).fill(null));
+                setIsXNext(true);
+                setWinner(null);
+                setActiveQuestion(null);
+                setFeedback(null);
+            };
+
+            useEffect(() => { initializeGrid(); }, []);
+
+            const checkWinner = (squares) => {
+                const lines = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ];
+                for (let i = 0; i < lines.length; i++) {
+                    const [a, b, c] = lines[i];
+                    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) return squares[a];
+                }
+                return squares.includes(null) ? null : 'Draw';
+            };
+
+            const handleCellClick = (index) => {
+                if (board[index] || winner || activeQuestion || feedback) return;
+                if (gameMode === '1p' && !isXNext) return; 
+                
+                const targetWord = gridWords[index];
+                
+                let options = [targetWord.tr];
+                while(options.length < 4) {
+                    const randomVocab = VOCAB_WORDS[Math.floor(Math.random() * VOCAB_WORDS.length)];
+                    if(!options.includes(randomVocab.tr)) options.push(randomVocab.tr);
+                }
+                options.sort(() => 0.5 - Math.random());
+                
+                setActiveQuestion({ word: targetWord.en, options: options, answer: options.indexOf(targetWord.tr) });
+                setPendingCell(index);
+            };
+
+            const handleAnswer = (selectedIndex) => {
+                const isCorrect = selectedIndex === activeQuestion.answer;
+                
+                if (isCorrect) {
+                    setFeedback({ text: "Correct!", type: "success" });
+                    setTimeout(() => {
+                        const newBoard = [...board];
+                        newBoard[pendingCell] = isXNext ? 'X' : 'O';
+                        setBoard(newBoard);
+                        
+                        const newWinner = checkWinner(newBoard);
+                        if (newWinner) {
+                            setWinner(newWinner);
+                        } else {
+                            setIsXNext(!isXNext);
+                            if (gameMode === '1p') setTimeout(() => botMove(newBoard), 600);
+                        }
+                        closeModal();
+                    }, 1000);
+                } else {
+                    setFeedback({ text: `Wrong! Answer: ${activeQuestion.options[activeQuestion.answer]}`, type: "error" });
+                    setTimeout(() => {
+                        setIsXNext(!isXNext);
+                        closeModal();
+                        if (gameMode === '1p') setTimeout(() => botMove(board), 800);
+                    }, 2000);
+                }
+            };
+
+            const closeModal = () => { setActiveQuestion(null); setPendingCell(null); setFeedback(null); };
+
+            const botMove = (currentBoard) => {
+                if (checkWinner(currentBoard)) return;
+                const emptyIndices = currentBoard.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+                if (emptyIndices.length > 0) {
+                    const randomCell = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+                    const newBoard = [...currentBoard];
+                    newBoard[randomCell] = 'O';
+                    setBoard(newBoard);
+                    setWinner(checkWinner(newBoard));
+                    setIsXNext(true);
+                }
+            };
+
+            return (
+                <div className="max-w-3xl mx-auto bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-indigo-200 text-center relative text-slate-800">
+                    <h2 className="text-3xl font-black text-indigo-900 mb-2">Vocab Tic-Tac-Toe</h2>
+                    <p className="text-slate-500 mb-8 font-medium">Answer correctly to claim the square!</p>
+
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                        <button 
+                            onClick={() => {setGameMode('1p'); initializeGrid();}} 
+                            className={`px-6 py-3 rounded-full font-bold transition-all ${gameMode === '1p' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                        >
+                            <i className="fas fa-robot mr-2"></i> Vs Computer
+                        </button>
+                        <button 
+                            onClick={() => {setGameMode('2p'); initializeGrid();}} 
+                            className={`px-6 py-3 rounded-full font-bold transition-all ${gameMode === '2p' ? 'bg-amber-500 text-indigo-900 shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                        >
+                            <i className="fas fa-user-friends mr-2"></i> 2 Players
+                        </button>
+                    </div>
+
+                    <div className="h-14 mb-4 flex items-center justify-center">
+                        {winner ? (
+                            <div className={`px-4 sm:px-8 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-black shadow-inner animate-pulse ${winner === 'X' ? 'bg-indigo-100 text-indigo-800' : winner === 'O' ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                {winner === 'Draw' ? 'Draw Game!' : gameMode === '2p' ? (winner === 'X' ? 'Player 1 (X) Wins!' : 'Player 2 (O) Wins!') : (winner === 'X' ? 'You Win!' : 'Computer Wins!')}
+                            </div>
+                        ) : (
+                            <div className="text-lg sm:text-xl font-bold text-center">
+                                {gameMode === '2p' ? (
+                                    isXNext ? <span className="text-indigo-600 px-4 sm:px-6 py-2 rounded-full bg-indigo-50 border border-indigo-200 block sm:inline">Player 1 (X)'s Turn</span> : <span className="text-amber-700 px-4 sm:px-6 py-2 rounded-full bg-amber-50 border border-amber-200 block sm:inline">Player 2 (O)'s Turn</span>
+                                ) : (
+                                    isXNext ? <span className="text-indigo-600 px-4 sm:px-6 py-2 rounded-full bg-indigo-50 border border-indigo-200 block sm:inline">Your Turn (X)</span> : <span className="text-slate-500 px-4 sm:px-6 py-2 rounded-full bg-slate-50 border border-slate-200 block sm:inline">Computer thinking... (O)</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-[400px] mx-auto mb-10">
+                        {board.map((cell, i) => (
+                            <button
+                                key={i}
+                                onClick={() => handleCellClick(i)}
+                                disabled={!!cell || !!winner || (gameMode === '1p' && !isXNext)}
+                                className={`h-20 sm:h-32 flex flex-col items-center justify-center rounded-xl sm:rounded-2xl transition-all border-2 sm:border-4 shadow-sm overflow-hidden
+                                    ${cell === 'X' ? 'bg-indigo-50 border-indigo-300' : 
+                                    cell === 'O' ? 'bg-amber-50 border-amber-300' : 
+                                    'bg-white border-slate-200 hover:border-indigo-400 cursor-pointer hover:shadow-lg transform hover:-translate-y-1'}
+                                `}
+                            >
+                                {cell ? (
+                                    <span className={`text-5xl sm:text-7xl font-black ${cell === 'X' ? 'text-indigo-500' : 'text-amber-500'}`}>{cell}</span>
+                                ) : (
+                                    <span className="text-[10px] sm:text-base font-bold text-slate-700 capitalize px-1 leading-tight">{gridWords[i]?.en}</span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button onClick={initializeGrid} className="flex items-center justify-center gap-2 mx-auto px-6 sm:px-8 py-3 bg-indigo-900 text-white rounded-full font-bold hover:bg-indigo-800 transition-colors shadow-lg">
+                        <i className="fas fa-redo"></i> Restart Game
+                    </button>
+
+                    {/* Question Modal Overlay */}
+                    {activeQuestion && (
+                        <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 rounded-3xl z-40">
+                            <div className="bg-white border-4 border-indigo-500 p-6 sm:p-8 rounded-3xl w-full max-w-sm shadow-2xl transform transition-all">
+                                {!feedback ? (
+                                    <>
+                                        <span className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2 block">What does this mean?</span>
+                                        <h3 className="text-3xl sm:text-4xl font-black text-indigo-700 mb-6 sm:mb-8 capitalize">{activeQuestion.word}</h3>
+                                        <div className="space-y-2 sm:space-y-3">
+                                            {activeQuestion.options.map((opt, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => handleAnswer(idx)}
+                                                    className="w-full p-3 sm:p-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-left hover:bg-indigo-50 hover:border-indigo-500 transition-colors font-bold text-slate-800 capitalize text-base sm:text-lg shadow-sm"
+                                                >
+                                                    {opt}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className={`p-6 sm:p-8 text-center rounded-2xl ${feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                        {feedback.type === 'success' ? <i className="fas fa-check-circle text-5xl sm:text-6xl mx-auto mb-4"></i> : <i className="fas fa-times-circle text-5xl sm:text-6xl mx-auto mb-4"></i>}
+                                        <h3 className="text-xl sm:text-2xl font-black">{feedback.text}</h3>
+                                        {feedback.type === 'error' && <p className="mt-2 font-bold opacity-80 text-xs sm:text-sm">Turn passes to opponent...</p>}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const MillionaireGame = () => {
+            const [currentLevel, setCurrentLevel] = useState(0);
+            const [gameState, setGameState] = useState('playing'); 
+            const [lifelines, setLifelines] = useState({ fifty: true, phone: true, audience: true });
+            const [hiddenOptions, setHiddenOptions] = useState([]);
+            const [feedback, setFeedback] = useState(null); 
+
+            const PRIZES = ["₺500", "₺1,000", "₺2,000", "₺3,000", "₺5,000", "₺7,500", "₺15,000", "₺30,000", "₺60,000", "₺125,000", "₺250,000", "₺1,000,000"].reverse();
+            const maxLevels = 12; 
+            
+            const qList = MILLIONAIRE_QUESTIONS.slice(0, 12);
+            const q = qList[currentLevel];
+
+            const handleAnswer = (idx) => {
+                if (gameState !== 'playing') return;
+                
+                if (idx === q.answer) {
+                    if (currentLevel === maxLevels - 1) {
+                        setGameState('won');
+                    } else {
+                        setFeedback({ message: 'Correct!', type: 'success' });
+                        setTimeout(() => {
+                            setCurrentLevel(prev => prev + 1);
+                            setHiddenOptions([]);
+                            setFeedback(null);
+                        }, 1500);
+                    }
+                } else {
+                    setGameState('lost');
+                }
+            };
+
+            const useFiftyFifty = () => {
+                if (!lifelines.fifty) return;
+                const wrongIndices = [0,1,2,3].filter(i => i !== q.answer);
+                const hide = wrongIndices.sort(() => 0.5 - Math.random()).slice(0, 2);
+                setHiddenOptions(hide);
+                setLifelines(prev => ({ ...prev, fifty: false }));
+            };
+
+            const usePhone = () => {
+                if (!lifelines.phone) return;
+                setFeedback({ message: `Tour Guide says: "I'm sure the answer is ${['A','B','C','D'][q.answer]}! Trust me."`, type: 'info' });
+                setLifelines(prev => ({ ...prev, phone: false }));
+                setTimeout(() => setFeedback(null), 5000);
+            };
+
+            const useAudience = () => {
+                if (!lifelines.audience) return;
+                setFeedback({ message: `Global Vote: 92% chose option ${['A','B','C','D'][q.answer]}.`, type: 'info' });
+                setLifelines(prev => ({ ...prev, audience: false }));
+                setTimeout(() => setFeedback(null), 5000);
+            };
+
+            const resetGame = () => {
+                setCurrentLevel(0);
+                setGameState('playing');
+                setLifelines({ fifty: true, phone: true, audience: true });
+                setHiddenOptions([]);
+                setFeedback(null);
+            };
+
+            if (gameState === 'won') return (
+                <div className="max-w-4xl mx-auto bg-gradient-to-b from-indigo-900 to-indigo-950 p-6 sm:p-12 rounded-3xl text-center text-white shadow-2xl border-4 border-amber-400">
+                    <i className="fas fa-trophy text-6xl sm:text-8xl text-amber-400 mb-6 drop-shadow-lg"></i>
+                    <h2 className="text-4xl sm:text-6xl font-black mb-4 text-amber-400 tracking-wider">CULTURE MILLIONAIRE!</h2>
+                    <p className="text-lg sm:text-2xl mb-10 font-light">You are a champion of the world capitals and sports!</p>
+                    <button onClick={resetGame} className="px-8 sm:px-10 py-3 sm:py-4 bg-amber-500 text-indigo-900 font-black text-lg sm:text-xl rounded-full hover:bg-amber-400 shadow-xl transition-transform hover:scale-105">Play Again</button>
+                </div>
+            );
+
+            if (gameState === 'lost') return (
+                <div className="max-w-4xl mx-auto bg-slate-900 p-6 sm:p-12 rounded-3xl text-center text-white shadow-2xl border-t-8 border-red-500">
+                    <i className="fas fa-map-signs text-6xl sm:text-8xl text-red-500 mb-6 opacity-90"></i>
+                    <h2 className="text-4xl sm:text-5xl font-black mb-4">Tour Ended</h2>
+                    <p className="text-lg sm:text-2xl mb-10 text-slate-300">Total Prize Collected: <span className="font-bold text-amber-400">{currentLevel === 0 ? "₺0" : PRIZES[PRIZES.length - currentLevel]}</span></p>
+                    <button onClick={resetGame} className="px-8 sm:px-10 py-3 sm:py-4 bg-indigo-600 font-black text-lg sm:text-xl rounded-full hover:bg-indigo-500 shadow-xl transition-transform hover:scale-105">Restart Tour</button>
+                </div>
+            );
+
+            return (
+                <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 bg-gradient-to-b from-slate-900 to-indigo-950 rounded-3xl p-5 md:p-10 shadow-2xl border-2 border-indigo-800 flex flex-col justify-between min-h-[400px] md:min-h-[500px]">
+                        
+                        {/* Lifelines */}
+                        <div className="flex justify-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+                            <button onClick={useFiftyFifty} disabled={!lifelines.fifty} className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 font-black text-lg sm:text-xl flex items-center justify-center transition-all ${lifelines.fifty ? 'bg-indigo-800 border-amber-400 text-amber-400 hover:bg-indigo-700 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'bg-slate-800 border-slate-700 text-slate-600'}`}>
+                                50
+                            </button>
+                            <button onClick={usePhone} disabled={!lifelines.phone} className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 font-black text-lg sm:text-xl flex items-center justify-center transition-all ${lifelines.phone ? 'bg-indigo-800 border-amber-400 text-amber-400 hover:bg-indigo-700 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'bg-slate-800 border-slate-700 text-slate-600'}`}>
+                                <i className="fas fa-headset"></i>
+                            </button>
+                            <button onClick={useAudience} disabled={!lifelines.audience} className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 font-black text-lg sm:text-xl flex items-center justify-center transition-all ${lifelines.audience ? 'bg-indigo-800 border-amber-400 text-amber-400 hover:bg-indigo-700 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'bg-slate-800 border-slate-700 text-slate-600'}`}>
+                                <i className="fas fa-users"></i>
+                            </button>
+                        </div>
+
+                        {feedback && (
+                            <div className={`p-3 sm:p-4 rounded-xl mb-6 text-center font-bold text-sm sm:text-lg ${feedback.type === 'success' ? 'bg-green-500 text-white' : 'bg-indigo-800 text-indigo-100 border border-indigo-400 shadow-inner'}`}>
+                                {feedback.message}
+                            </div>
+                        )}
+
+                        {/* Question */}
+                        <div className="bg-slate-800 border-2 border-indigo-500 p-6 md:p-10 rounded-3xl mb-8 text-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] relative mt-4 sm:mt-0">
+                            <span className="absolute -top-4 sm:-top-5 left-1/2 transform -translate-x-1/2 bg-amber-500 text-indigo-900 font-black px-4 sm:px-6 py-1 sm:py-2 rounded-full text-xs sm:text-sm tracking-widest shadow-lg border border-amber-400 whitespace-nowrap">LEVEL {currentLevel + 1}</span>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-snug">{q.q}</h3>
+                        </div>
+
+                        {/* Options */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                            {q.options.map((opt, idx) => {
+                                const letter = ['A', 'B', 'C', 'D'][idx];
+                                const isHidden = hiddenOptions.includes(idx);
+                                return (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleAnswer(idx)}
+                                        disabled={isHidden || feedback?.type === 'success'}
+                                        className={`relative p-3 sm:p-5 rounded-xl sm:rounded-full border-2 text-left transition-all flex items-center
+                                            ${isHidden ? 'opacity-0 cursor-default' : 'bg-slate-800 border-indigo-700 text-indigo-100 hover:bg-indigo-900 hover:border-amber-400 hover:shadow-[0_0_15px_rgba(251,191,36,0.4)]'}`}
+                                    >
+                                        <span className="text-amber-400 font-black text-lg sm:text-xl mr-3 sm:mr-4 ml-2 sm:ml-4">{letter}:</span>
+                                        <span className="font-semibold text-sm sm:text-xl">{opt}</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Prize Ladder */}
+                    <div className="w-full md:w-64 bg-slate-900 rounded-3xl p-4 flex flex-col justify-center border-2 border-indigo-900 shadow-xl">
+                        {PRIZES.map((prize, idx) => {
+                            const levelIndex = PRIZES.length - 1 - idx;
+                            const isCurrent = levelIndex === currentLevel;
+                            const isPassed = levelIndex < currentLevel;
+                            return (
+                                <div key={idx} className={`flex justify-between px-5 py-2.5 font-mono font-bold rounded-lg mb-1
+                                    ${isCurrent ? 'bg-amber-500 text-indigo-900 text-lg shadow-md' : isPassed ? 'text-indigo-400 opacity-60' : 'text-amber-200 opacity-80'}`}>
+                                    <span>{levelIndex + 1}</span>
+                                    <span>{prize}</span>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        const CrosswordGame = () => {
+            const initialGrid = [
+                [{ans:'C', val:'', num:1, active:true}, {ans:'I', val:'', num:null, active:true}, {ans:'T', val:'', num:2, active:true}, {ans:'Y', val:'', num:null, active:true}],
+                [{ans:'O', val:'', num:null, active:true}, {active:false}, {ans:'O', val:'', num:null, active:true}, {active:false}],
+                [{ans:'U', val:'', num:null, active:true}, {active:false}, {ans:'W', val:'', num:null, active:true}, {active:false}],
+                [{ans:'R', val:'', num:null, active:true}, {active:false}, {ans:'E', val:'', num:null, active:true}, {active:false}],
+                [{ans:'T', val:'', num:null, active:true}, {active:false}, {ans:'R', val:'', num:null, active:true}, {active:false}],
+            ];
+
+            const [grid, setGrid] = useState(initialGrid);
+            const [success, setSuccess] = useState(false);
+
+            const handleChange = (r, c, value) => {
+                const char = value.toUpperCase().slice(-1); 
+                const newGrid = [...grid];
+                newGrid[r][c].val = char;
+                setGrid(newGrid);
+                checkWin(newGrid);
+            };
+
+            const checkWin = (currentGrid) => {
+                let won = true;
+                for (let r=0; r<5; r++) {
+                    for (let c=0; c<4; c++) {
+                        if (currentGrid[r][c].active && currentGrid[r][c].val !== currentGrid[r][c].ans) {
+                            won = false;
+                        }
+                    }
+                }
+                setSuccess(won);
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-indigo-200">
+                    <h2 className="text-3xl font-black text-indigo-900 mb-6 flex items-center gap-3">
+                        <i className="fas fa-border-all text-amber-500"></i> Mini Crossword (Culture)
+                    </h2>
+                    
+                    {success && (
+                        <div className="bg-green-100 text-green-800 p-5 rounded-xl mb-8 font-bold flex items-center gap-3 border border-green-300">
+                            <i className="fas fa-check-circle text-2xl text-green-600"></i> Perfect! You solved the puzzle.
+                        </div>
+                    )}
+
+                    <div className="flex flex-col md:flex-row gap-8 sm:gap-12">
+                        <div className="flex flex-col gap-1 mx-auto bg-indigo-950 p-3 sm:p-4 rounded-xl w-fit shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] border border-indigo-700">
+                            {grid.map((row, r) => (
+                                <div key={r} className="flex gap-1">
+                                    {row.map((cell, c) => (
+                                        <div key={c} className="relative w-10 h-10 sm:w-16 sm:h-16">
+                                            {cell.active ? (
+                                                <>
+                                                    {cell.num && <span className="absolute top-0.5 left-1 sm:top-1 sm:left-1.5 text-[9px] sm:text-[11px] text-indigo-400 font-bold z-10">{cell.num}</span>}
+                                                    <input 
+                                                        type="text"
+                                                        value={cell.val}
+                                                        onChange={(e) => handleChange(r, c, e.target.value)}
+                                                        className={`w-full h-full text-center text-xl sm:text-3xl font-black uppercase border-none focus:ring-2 sm:focus:ring-4 focus:ring-amber-500 outline-none rounded sm:rounded-md transition-colors p-0
+                                                            ${success ? 'bg-green-300 text-green-900' : 'bg-slate-100 text-indigo-900'}`}
+                                                        maxLength="1"
+                                                    />
+                                                </>
+                                            ) : (
+                                                <div className="w-full h-full bg-transparent"></div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex-1 bg-indigo-50 p-5 sm:p-6 rounded-xl border border-indigo-200">
+                            <h3 className="text-xl sm:text-2xl font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2">Clues</h3>
+                            <div className="mb-6">
+                                <h4 className="font-bold text-amber-600 mb-2 uppercase tracking-widest text-sm">Across (Soldan Sağa)</h4>
+                                <ul className="space-y-3 text-slate-700 font-medium">
+                                    <li><span className="font-black text-indigo-900">1.</span> A large and important town (Şehir).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-amber-600 mb-2 uppercase tracking-widest text-sm">Down (Yukarıdan Aşağıya)</h4>
+                                <ul className="space-y-3 text-slate-700 font-medium">
+                                    <li><span className="font-black text-indigo-900">1.</span> A place where sports like tennis or basketball are played (Saha/Kort).</li>
+                                    <li><span className="font-black text-indigo-900">2.</span> A tall, narrow building or structure, like the Eiffel... (Kule).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const TouristRescueGame = () => {
+            const [wordObj, setWordObj] = useState(null);
+            const [guessedLetters, setGuessedLetters] = useState([]);
+            const [mistakes, setMistakes] = useState(0);
+            const maxMistakes = 6;
+            
+            const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+            const initGame = () => {
+                const randomWord = VOCAB_WORDS[Math.floor(Math.random() * VOCAB_WORDS.length)];
+                setWordObj(randomWord);
+                setGuessedLetters([]);
+                setMistakes(0);
+            };
+
+            useEffect(() => { initGame(); }, []);
+
+            const handleGuess = (letter) => {
+                if (guessedLetters.includes(letter) || mistakes >= maxMistakes || (wordObj && wordObj.en.toUpperCase().split('').every(c => c === ' ' || c === '-' || guessedLetters.includes(c)))) return;
+                
+                setGuessedLetters(prev => [...prev, letter]);
+                
+                if (!wordObj.en.toUpperCase().includes(letter)) {
+                    setMistakes(prev => prev + 1);
+                }
+            };
+
+            if (!wordObj) return null;
+
+            const isGameOver = mistakes >= maxMistakes;
+            const wordChars = wordObj.en.toUpperCase().split('');
+            const isGameWon = wordChars.every(char => char === ' ' || char === '-' || guessedLetters.includes(char));
+            const flightTime = Math.max(0, 100 - (mistakes * (100 / maxMistakes)));
+
+            return (
+                <div className="max-w-4xl mx-auto bg-slate-900 p-8 rounded-3xl shadow-2xl border-2 border-indigo-500 text-center relative overflow-hidden text-white">
+                    <div className="relative z-10">
+                        <h2 className="text-3xl font-black mb-2 flex items-center justify-center gap-3">
+                            <i className="fas fa-plane-departure text-amber-400"></i> Tourist Rescue
+                        </h2>
+                        <p className="text-indigo-200 mb-8 font-medium">Guess the word correctly before the Flight Departure Time runs out!</p>
+
+                        <div className="flex flex-col items-center mb-8">
+                            <div className="w-full max-w-md bg-slate-800 rounded-full h-8 border-2 border-slate-600 relative overflow-hidden mb-4 shadow-inner">
+                                <div 
+                                    className={`h-full transition-all duration-500 ${flightTime > 50 ? 'bg-green-500' : flightTime > 25 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                    style={{ width: `${flightTime}%` }}
+                                ></div>
+                                <div className="absolute inset-0 flex items-center justify-center text-white text-xs font-black tracking-widest drop-shadow-md">
+                                    FLIGHT DEPARTURE: {Math.round(flightTime)}%
+                                </div>
+                            </div>
+                            <div className="text-amber-400 font-bold bg-indigo-900/50 px-6 py-2 rounded-xl border border-indigo-800/50">
+                                Hint: {wordObj.tr}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap justify-center gap-1 sm:gap-3 mb-8 sm:mb-12">
+                            {wordChars.map((char, idx) => (
+                                <div key={idx} className="flex flex-col items-center">
+                                    {char === ' ' || char === '-' ? (
+                                        <span className="w-4 h-8 sm:w-8 sm:h-12 flex items-end justify-center text-2xl sm:text-4xl font-black text-slate-500">{char}</span>
+                                    ) : (
+                                        <span className={`w-8 h-10 sm:w-12 sm:h-16 flex items-center justify-center text-2xl sm:text-4xl font-black rounded sm:rounded-lg border-b-2 sm:border-b-4 
+                                            ${guessedLetters.includes(char) || isGameOver ? 'text-slate-900 border-amber-500 bg-amber-400' : 'text-transparent border-slate-700 bg-slate-800'}`}>
+                                            {guessedLetters.includes(char) || isGameOver ? char : '_'}
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {(isGameOver || isGameWon) ? (
+                            <div className={`p-4 sm:p-8 rounded-2xl border-4 animate-bounce mb-8 ${isGameWon ? 'bg-green-900/50 border-green-500' : 'bg-red-900/50 border-red-500'}`}>
+                                <h3 className={`text-2xl sm:text-4xl font-black mb-2 sm:mb-4 ${isGameWon ? 'text-green-400' : 'text-red-400'}`}>
+                                    {isGameWon ? 'Flight Caught!' : 'Missed the Flight!'}
+                                </h3>
+                                <p className="text-white text-lg sm:text-xl mb-4 sm:mb-6">
+                                    The word was: <span className="font-black text-amber-400">{wordObj.en.toUpperCase()}</span>
+                                </p>
+                                <button onClick={initGame} className="px-6 sm:px-10 py-3 sm:py-4 bg-white text-slate-900 rounded-full font-black text-base sm:text-lg hover:bg-slate-100 transition-transform hover:scale-105">
+                                    Play Again
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 max-w-2xl mx-auto">
+                                {alphabets.map(letter => {
+                                    const isGuessed = guessedLetters.includes(letter);
+                                    const isCorrect = isGuessed && wordObj.en.toUpperCase().includes(letter);
+                                    const isWrong = isGuessed && !isCorrect;
+                                    
+                                    return (
+                                        <button
+                                            key={letter}
+                                            onClick={() => handleGuess(letter)}
+                                            disabled={isGuessed}
+                                            className={`w-8 h-10 sm:w-12 sm:h-14 font-black text-lg sm:text-xl rounded sm:rounded-lg transition-all border-b-2 sm:border-b-4
+                                                ${isCorrect ? 'bg-green-600 border-green-800 text-white opacity-50 cursor-not-allowed' :
+                                                isWrong ? 'bg-slate-700 border-slate-800 text-slate-500 opacity-50 cursor-not-allowed' :
+                                                'bg-indigo-600 border-indigo-800 text-white hover:bg-indigo-500 hover:-translate-y-1'}`}
+                                        >
+                                            {letter}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const CultureMemoryGame = () => {
+            const [cards, setCards] = useState([]);
+            const [flippedIndices, setFlippedIndices] = useState([]);
+            const [matchedIds, setMatchedIds] = useState([]);
+            const [moves, setMoves] = useState(0);
+            const [isChecking, setIsChecking] = useState(false);
+
+            const initGame = () => {
+                const selectedWords = [...VOCAB_WORDS].sort(() => 0.5 - Math.random()).slice(0, 6);
+                
+                let newCards = [];
+                selectedWords.forEach(word => {
+                    newCards.push({ id: word.en, text: word.en, type: 'en' });
+                    newCards.push({ id: word.en, text: word.tr, type: 'tr' });
+                });
+                
+                newCards = newCards.sort(() => 0.5 - Math.random());
+                setCards(newCards);
+                setFlippedIndices([]);
+                setMatchedIds([]);
+                setMoves(0);
+                setIsChecking(false);
+            };
+
+            useEffect(() => { initGame(); }, []);
+
+            const handleCardClick = (index) => {
+                if (isChecking || flippedIndices.includes(index) || matchedIds.includes(cards[index].id)) {
+                    return;
+                }
+
+                const newFlipped = [...flippedIndices, index];
+                setFlippedIndices(newFlipped);
+
+                if (newFlipped.length === 2) {
+                    setIsChecking(true);
+                    setMoves(prev => prev + 1);
+                    const firstCard = cards[newFlipped[0]];
+                    const secondCard = cards[newFlipped[1]];
+
+                    if (firstCard.id === secondCard.id) {
+                        setTimeout(() => {
+                            setMatchedIds(prev => [...prev, firstCard.id]);
+                            setFlippedIndices([]);
+                            setIsChecking(false);
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            setFlippedIndices([]);
+                            setIsChecking(false);
+                        }, 1000);
+                    }
+                }
+            };
+
+            const isGameWon = matchedIds.length === 6 && cards.length === 12;
+
+            return (
+                <div className="max-w-4xl mx-auto bg-slate-900 p-8 rounded-3xl shadow-2xl border border-indigo-700 text-center">
+                    <div className="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+                        <h2 className="text-3xl font-black text-amber-400 flex items-center gap-3">
+                            <i className="fas fa-th"></i> Culture Memory
+                        </h2>
+                        <div className="flex gap-4 items-center">
+                            <span className="text-indigo-200 font-bold bg-slate-800 px-4 py-2 rounded-lg">Moves: {moves}</span>
+                            <button onClick={initGame} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-500 transition-colors">
+                                <i className="fas fa-redo"></i> Restart
+                            </button>
+                        </div>
+                    </div>
+
+                    {isGameWon ? (
+                        <div className="py-16 animate-pulse">
+                            <i className="fas fa-camera text-7xl text-amber-400 mb-6 drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"></i>
+                            <h3 className="text-5xl font-black text-white mb-4">Culture Memory Master!</h3>
+                            <p className="text-xl text-indigo-200 mb-8">You matched all the words in {moves} moves.</p>
+                            <button onClick={initGame} className="px-10 py-4 bg-amber-500 text-slate-900 rounded-full font-black text-lg hover:bg-amber-400 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(251,191,36,0.5)]">
+                                Play Again
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
+                            {cards.map((card, idx) => {
+                                const isFlipped = flippedIndices.includes(idx) || matchedIds.includes(card.id);
+                                const isMatched = matchedIds.includes(card.id);
+                                
+                                return (
+                                    <div key={idx} className="relative w-full h-24 sm:h-32" style={{ perspective: "1000px" }}>
+                                        <button
+                                            onClick={() => handleCardClick(idx)}
+                                            className={`w-full h-full transition-transform duration-500`}
+                                            style={{ transformStyle: "preserve-3d", transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+                                        >
+                                            {/* Front face (Card Back) */}
+                                            <div className="absolute w-full h-full bg-slate-800 rounded-xl flex items-center justify-center border-2 border-slate-600" style={{ backfaceVisibility: "hidden" }}>
+                                                <i className="fas fa-globe text-3xl text-amber-400 opacity-50"></i>
+                                            </div>
+                                            
+                                            {/* Back face (Card Front with Text) */}
+                                            <div 
+                                                className={`absolute w-full h-full rounded-xl flex items-center justify-center p-2 border-2 ${isMatched ? 'bg-green-900 border-green-500 text-green-300 opacity-70' : card.type === 'en' ? 'bg-indigo-100 border-indigo-400 text-indigo-900' : 'bg-amber-100 border-amber-400 text-amber-900'}`}
+                                                style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                                            >
+                                                <span className="font-black text-sm sm:text-base break-words text-center">{card.text}</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const FinalExam = () => {
+            const [examQuestions, setExamQuestions] = useState([]);
+            const [answers, setAnswers] = useState({});
+            const [isSubmitted, setIsSubmitted] = useState(false);
+
+            useEffect(() => {
+                let allQuestions = [];
+                
+                TOPICS.find(t => t.id === 'vocabulary')?.questions.forEach(q => allQuestions.push(q));
+                TOPICS.find(t => t.id === 'grammar')?.questions.forEach(q => allQuestions.push(q));
+                
+                MILLIONAIRE_QUESTIONS.forEach(q => {
+                    allQuestions.push({ type: 'mcq', q: q.q, options: q.options, answer: q.answer });
+                });
+
+                allQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 15);
+                setExamQuestions(allQuestions);
+            }, []);
+
+            const handleSelect = (qIndex, value) => {
+                if (isSubmitted) return;
+                setAnswers(prev => ({ ...prev, [qIndex]: value }));
+            };
+
+            const calculateScore = () => {
+                let score = 0;
+                examQuestions.forEach((q, i) => {
+                    if (q.type === 'mcq') {
+                        if (answers[i] === q.answer) score++;
+                    } else if (q.type === 'fill') {
+                        const safeAnswer = answers[i] || '';
+                        if (safeAnswer.toLowerCase().trim() === q.answer.toLowerCase()) score++;
+                    }
+                });
+                return score;
+            };
+
+            const isAllAnswered = () => {
+                return examQuestions.length > 0 && examQuestions.every((q, i) => answers[i] !== undefined && answers[i] !== "");
+            };
+
+            if (examQuestions.length === 0) return <div className="text-slate-800 font-bold p-8">Loading Exam...</div>;
+
+            if (isSubmitted) {
+                const score = calculateScore();
+                const percentage = Math.round((score / examQuestions.length) * 100);
+                let message = "";
+                let colorClass = "";
+                
+                if (percentage >= 90) { message = "Global Citizen! You are an expert in world culture!"; colorClass = "text-green-500"; }
+                else if (percentage >= 70) { message = "Great job! You know a lot about landmarks and sports."; colorClass = "text-blue-500"; }
+                else if (percentage >= 50) { message = "Keep exploring to learn more about the world."; colorClass = "text-amber-500"; }
+                else { message = "Oh no! Review your notes and try the journey again."; colorClass = "text-red-500"; }
+
+                return (
+                    <div className="max-w-4xl mx-auto bg-white p-12 rounded-3xl shadow-2xl border border-indigo-200 text-center text-slate-800">
+                        <i className="fas fa-graduation-cap text-8xl text-indigo-600 mb-6 drop-shadow-md"></i>
+                        <h2 className="text-5xl font-black text-slate-800 mb-2">Final Exam Results</h2>
+                        <h3 className={`text-6xl font-black mb-6 ${colorClass}`}>{percentage}%</h3>
+                        <p className="text-2xl text-slate-600 mb-10">{message} ({score} out of {examQuestions.length} correct)</p>
+                        
+                        <div className="space-y-4 mb-10 text-left">
+                            {examQuestions.map((q, i) => {
+                                const safeAnswer = answers[i] || '';
+                                const isCorrect = q.type === 'mcq' ? answers[i] === q.answer : safeAnswer.toLowerCase().trim() === q.answer.toLowerCase();
+                                return (
+                                    <div key={i} className={`p-4 rounded-xl border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                        <p className="text-slate-800 font-bold mb-2">{i + 1}. {q.q}</p>
+                                        <p className="text-slate-600 text-sm">
+                                            Your Answer: <span className={isCorrect ? "text-green-600 font-bold" : "text-red-600 font-bold line-through"}>{q.type === 'mcq' ? q.options[answers[i]] : answers[i]}</span>
+                                            {!isCorrect && <span className="ml-3 text-green-600 font-bold">Correct: {q.type === 'mcq' ? q.options[q.answer] : q.answer}</span>}
+                                        </p>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        
+                        <button onClick={() => { setIsSubmitted(false); setAnswers({}); setExamQuestions([...examQuestions].sort(() => 0.5 - Math.random())); }} className="px-10 py-4 bg-indigo-600 text-white rounded-full font-black text-xl hover:bg-indigo-700 shadow-lg transition-transform hover:scale-105">
+                            Retake Exam
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="max-w-4xl mx-auto bg-white p-8 sm:p-10 rounded-3xl shadow-2xl border border-indigo-200">
+                    <div className="border-b border-slate-200 pb-6 mb-8 text-center">
+                        <h2 className="text-4xl font-black text-indigo-900 mb-2"><i className="fas fa-file-signature text-amber-500"></i> Final Exam</h2>
+                        <p className="text-slate-500 font-medium">Answer all 15 questions to complete your cultural journey.</p>
+                    </div>
+
+                    <div className="space-y-6">
+                        {examQuestions.map((q, qIndex) => {
+                            const userAnswer = answers[qIndex];
+                            
+                            return (
+                                <div key={qIndex} className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                    <p className="font-bold text-lg text-slate-800 mb-4">
+                                        <span className="text-indigo-600 mr-2">{qIndex + 1}.</span> {q.q}
+                                    </p>
+                                    
+                                    {q.type === 'mcq' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {q.options.map((opt, oIndex) => {
+                                                const isSelected = userAnswer === oIndex;
+                                                return (
+                                                    <button 
+                                                        key={oIndex} 
+                                                        onClick={() => handleSelect(qIndex, oIndex)} 
+                                                        className={`p-4 rounded-xl border-2 text-left font-bold transition-all text-slate-700
+                                                            ${isSelected ? 'bg-indigo-100 border-indigo-500 text-indigo-900' : 'bg-white border-slate-200 hover:bg-indigo-50'}`}
+                                                    >
+                                                        {opt}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {q.type === 'fill' && (
+                                        <input 
+                                            type="text" 
+                                            value={userAnswer || ""}
+                                            onChange={(e) => handleSelect(qIndex, e.target.value)}
+                                            placeholder="Type your answer..."
+                                            className="w-full p-4 rounded-xl border-2 border-slate-300 font-bold outline-none focus:border-indigo-500 focus:ring-0 text-slate-800 bg-white"
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <button
+                        onClick={() => setIsSubmitted(true)}
+                        disabled={!isAllAnswered()}
+                        className="w-full mt-10 bg-gradient-to-r from-indigo-600 to-indigo-800 text-white py-5 rounded-2xl font-black text-xl hover:from-indigo-700 hover:to-indigo-900 disabled:from-slate-300 disabled:to-slate-300 disabled:cursor-not-allowed shadow-lg transition-all"
+                    >
+                        Submit Exam
+                    </button>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
